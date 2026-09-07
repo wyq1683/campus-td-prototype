@@ -1,5 +1,11 @@
 # 进度日志 · 高中校园塔防原型
 
+## 2026-09-07 21:30 [同步 · 每日双镜像] 状态：部分（GitHub ✅ / 乐享 ⚠️ 跳过）
+- 做了：执行每日同步自动化。① **GitHub（本地 git，优先）**：`cp -r` 镜像工作区 README.md / blender-mcp-launch.sh / build_campus_td.py / config / diag_blender_mcp.py / blender_mcp_addon-1.0.0.zip / render_campus_td.png / campus_td（排除 `.workbuddy/` 与 `.git/`）至 D:/AI/campus-td-git → `git add -A` → commit `6a6b4cb`「sync: 2026-09-07 自动同步」→ `GIT_SSL_NO_VERIFY=1 git push origin main`。首推遇 HTTP 502 瞬断（仓库含大量 PNG / m09_walkthrough.mp4 / campus_td.glb），`git config http.postBuffer 524288000` 后单重试成功，`0ffc725..6a6b4cb main->main`。② **乐享知识库（主镜像）**：⚠️ **跳过**——本自动化环境无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置（连接器未接入），按纪律记为非致命失败，不重试死循环、不重建仓、不改 remote URL。
+- 遇坑/关键结论：① GitHub 推送走本地 git + 内嵌 PAT，与 WorkBuddy 内置 403 只读集成无关；② 502 为瞬时网络错误，单重试即恢复，非仓库问题；③ 乐享侧待连接器就绪后由后续同步补传（PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh + 绕 WAF 的 diag 脚本）。
+- 下一步：维持每日 21:30 双镜像同步；乐享就绪后回填主镜像。
+- 预览：无（同步任务，无渲染）。
+
 ## 2026-09-07 21:22 [自动构建 · 空闲巡检] 状态：跳过（无未完成里程碑 · 项目已收官）
 - 做了：按防重叠锁流程进入——`campus_td/.build_lock` **不存在**（前次已正常释放），无需 mtime 判定、未取锁、未删锁。探明 **Blender MCP 仍在线**（:9876 PID 10132）。对 PLAN.md §7 + 本文件顶部全量 grep `⬜`/未完成/待做/TODO → 仅命中第 126 行被划除的「修 Teach/Lab 超界」（已并入 M11）与第 222 行自动化契约说明，**M0–M19 全路线图 + 全部 backlog（M5B / M8B–E / M9 / M9b / M10B·C·D / M11–M18 / M19 / M19c）均已 ✅ 完成**，无下一个待推进里程碑。
 - 遇坑：无（本运行未启动任何 Blender/MCP 写操作，零并发损坏风险）。
