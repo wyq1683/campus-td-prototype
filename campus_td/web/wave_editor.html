@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校园塔防 · 波次编辑器 (M19)</title>
+<style>
+  :root{
+    --ink:#e8f1f8; --dim:#8fa3b5; --panel:rgba(12,18,26,.92);
+    --line:rgba(120,180,220,.22); --ok:#38d9a9; --warn:#ffd43b; --bad:#ff6b6b;
+    --accent:#5ad1ff; --accent2:#ffb454;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#0a0f15;color:var(--ink);
+    font:13px/1.5 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  h1{font-size:17px;margin:0 0 2px}
+  h2{font-size:13px;color:var(--accent);margin:14px 0 8px;letter-spacing:.5px;border-left:3px solid var(--accent);padding-left:7px}
+  .top{position:sticky;top:0;z-index:20;background:rgba(8,12,18,.96);padding:12px 16px;
+       border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .btn{background:rgba(20,32,46,.9);border:1px solid var(--line);color:var(--ink);
+       border-radius:8px;padding:8px 14px;cursor:pointer;font:inherit;font-size:13px;font-weight:600;transition:.15s}
+  .btn:hover{border-color:rgba(140,210,255,.6);background:rgba(30,48,68,.95)}
+  .btn.primary{background:linear-gradient(180deg,#1b6f9e,#0e4f74);border-color:#2aa3e0}
+  .btn.ghost{background:transparent}
+  .wrap{display:flex;gap:16px;padding:16px;align-items:flex-start}
+  .col{flex:1;min-width:0}
+  .col.right{flex:0 0 380px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .wave{border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:10px;background:rgba(16,24,34,.6)}
+  .wave .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+  .wave .hd .ix{font-weight:800;font-size:15px;color:var(--accent2)}
+  .row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:3px 0}
+  .comp{display:flex;align-items:center;gap:6px;background:rgba(20,30,42,.7);
+        border:1px solid var(--line);border-radius:7px;padding:4px 7px;margin:3px 0}
+  .comp .nm{font-weight:600;min-width:78px}
+  .comp .c2{min-width:46px}
+  input,select{background:#0c1620;border:1px solid var(--line);color:var(--ink);
+        border-radius:6px;padding:4px 6px;font:inherit;font-size:12px}
+  input[type=number]{width:62px}
+  select{width:auto}
+  .x{cursor:pointer;color:var(--bad);font-weight:800;padding:0 6px;border-radius:6px}
+  .x:hover{background:rgba(255,107,107,.15)}
+  .meta{display:flex;gap:14px;color:var(--dim);font-size:11.5px;margin-top:6px;flex-wrap:wrap}
+  .meta b{color:var(--ink)}
+  .adv{display:none}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+  .field{display:flex;justify-content:space-between;align-items:center;gap:8px;
+         background:rgba(16,24,34,.5);border:1px solid var(--line);border-radius:7px;padding:5px 8px}
+  .field label{color:var(--dim);font-size:11.5px}
+  #result{font-size:12.5px}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+  th,td{border:1px solid var(--line);padding:5px 7px;text-align:center}
+  th{color:var(--dim);font-weight:600;background:rgba(20,30,42,.6)}
+  .verdict{margin:10px 0;padding:10px 12px;border-radius:9px;font-weight:700;border:1px solid var(--line)}
+  .v-ok{background:rgba(20,70,55,.5);border-color:var(--ok);color:var(--ok)}
+  .v-bad{background:rgba(80,30,30,.5);border-color:var(--bad);color:var(--bad)}
+  .v-warn{background:rgba(80,70,20,.4);border-color:var(--warn);color:var(--warn)}
+  textarea{width:100%;height:200px;background:#0c1620;border:1px solid var(--line);color:#9fe6c8;
+        border-radius:8px;padding:8px;font:11px/1.4 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+  .note{color:var(--dim);font-size:11.5px;line-height:1.6}
+  .tag{display:inline-block;background:rgba(90,209,255,.14);color:var(--accent);
+       border:1px solid rgba(90,209,255,.4);border-radius:20px;padding:1px 9px;font-size:11px;margin-left:6px}
+  .muted{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="top">
+  <div>
+    <h1>校园塔防 · 波次编辑器 <span class="tag">M19</span></h1>
+    <div class="note">编辑 10 波构成 / 数值 → 实时验算双策略平衡 → 导出 <code>m10_config.json</code>，再用 <code>python build/m10c_webcfg.py</code> 推回原型。</div>
+  </div>
+  <button class="btn primary" id="btnSim">▶ 模拟平衡</button>
+  <button class="btn" id="btnExport">⬇ 导出 config.json</button>
+  <button class="btn ghost" id="btnReset">↺ 重置</button>
+  <label class="note"><input type="checkbox" id="autoCb" checked> 自动重算 hp_scale/bonus</label>
+  <button class="btn ghost" id="btnAdv">高级数值 ▾</button>
+</div>
+
+<div class="wrap">
+  <div class="col">
+    <div id="waves"></div>
+    <div class="panel adv" id="advPanel">
+      <h2>经济与生成</h2>
+      <div class="grid2" id="econGrid"></div>
+      <h2>敌人属性</h2>
+      <div class="grid2" id="enemyGrid"></div>
+      <h2>塔属性</h2>
+      <div class="grid2" id="towerGrid"></div>
+      <div class="note" style="margin-top:8px">改这些会直接影响平衡；改完点「模拟平衡」看结果。保存时一并写进导出的 JSON。</div>
+    </div>
+  </div>
+
+  <div class="col right">
+    <div class="panel">
+      <h2>平衡结果</h2>
+      <div id="result"><span class="muted">点「模拟平衡」生成逐波面板。</span></div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h2>导出 / 应用</h2>
+      <div class="note">
+        1. 点「导出 config.json」下载编辑后的数值（单一数据源）。<br>
+        2. 覆盖 <code>campus_td/build/m10_config.json</code>。<br>
+        3. 运行 <code>python build/m10c_webcfg.py</code> 把数值推回 <code>web/config.js</code>。<br>
+        4. 刷新 <code>web/index.html</code> 即可用新平衡试玩（带 <code>?selftest=1</code> 自检）。<br>
+        5. 若需同步进 Blender 的塔防层（M7/M10），重跑对应脚本（它们读 m10_config.json）。
+      </div>
+      <textarea id="jsonOut" placeholder="导出后显示在这里…"></textarea>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="sim.js"></script>
+<script>
+const ECN = { Swarm:"抄作业小队", Rusher:"迟到生", Elite:"学霸", Tank:"教导主任", Boss:"校长" };
+let cfg = JSON.parse(JSON.stringify(CFG));   // 可编辑副本
+
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
+
+// ---------------- 波次列表 ----------------
+function renderWaves(){
+  const box = document.getElementById("waves"); box.innerHTML="";
+  cfg.waves.forEach((w, i)=>{
+    const card = el("div","wave");
+    const hd = el("div","hd");
+    hd.appendChild(el("span","ix", (i+1)+" 波"));
+    const desc = el("input"); desc.value=w.desc||""; desc.style.flex="1"; desc.placeholder="本波说明";
+    desc.oninput=()=>{ w.desc=desc.value; };
+    hd.appendChild(desc);
+    card.appendChild(hd);
+
+    w.composition.forEach((c, ci)=>{
+      const r = el("div","comp");
+      const nm = el("span","nm", (ECN[c[0]]||c[0]));
+      const sel = el("select");
+      Object.keys(cfg.enemies).forEach(k=>{ const o=el("option",null,k); if(k===c[0])o.selected=true; sel.appendChild(o); });
+      sel.onchange=()=>{ c[0]=sel.value; };
+      const num = el("input"); num.type="number"; num.min=0; num.value=c[1];
+      num.oninput=()=>{ c[1]=Math.max(0,parseInt(num.value)||0); refreshMeta(w,i); };
+      const x = el("span","x","×"); x.onclick=()=>{ w.composition.splice(ci,1); renderWaves(); };
+      r.appendChild(nm); r.appendChild(sel); r.appendChild(el("span","muted","×")); r.appendChild(num); r.appendChild(x);
+      card.appendChild(r);
+    });
+
+    const add = el("div","row");
+    const asel = el("select");
+    Object.keys(cfg.enemies).forEach(k=>{ const o=el("option",null,k); asel.appendChild(o); });
+    const anum = el("input"); anum.type="number"; anum.min=1; anum.value=1; anum.style.width="52px";
+    const ab = el("button","btn ghost","+ 添加敌人");
+    ab.onclick=()=>{ w.composition.push([asel.value, Math.max(1,parseInt(anum.value)||1)]); renderWaves(); };
+    add.appendChild(el("span","muted","添加：")); add.appendChild(asel); add.appendChild(anum); add.appendChild(ab);
+    card.appendChild(add);
+
+    const meta = el("div","meta"); meta.id="meta"+i;
+    card.appendChild(meta);
+    box.appendChild(card);
+    refreshMeta(w,i);
+  });
+}
+function refreshMeta(w, i){
+  const hs = w.hp_scale, hp = w.hp_pool||0;
+  const m = document.getElementById("meta"+i);
+  if(!m) return;
+  m.innerHTML = `hp_scale <b>${hs.toFixed(3)}</b> · 清波奖励 <b>${w.bonus}</b> · 波次血量池 <b>${Math.round(hp)}</b>`;
+}
+
+// ---------------- 高级数值 ----------------
+function renderAdvanced(){
+  const econ = document.getElementById("econGrid"); econ.innerHTML="";
+  [["start_gold","起始金币"],["lives","基地生命"]].forEach(([k,lab])=>{
+    const f=el("div","field"); f.appendChild(el("label",null,lab));
+    const v=el("input"); v.type="number"; v.value=cfg.economy[k];
+    v.oninput=()=>{ cfg.economy[k]=parseInt(v.value)||0; };
+    f.appendChild(v); econ.appendChild(f);
+  });
+  Object.keys(cfg.spawn_gap).forEach(k=>{
+    const f=el("div","field"); f.appendChild(el("label",null,"生成间隔·"+k));
+    const v=el("input"); v.type="number"; v.step="0.05"; v.value=cfg.spawn_gap[k];
+    v.oninput=()=>{ cfg.spawn_gap[k]=parseFloat(v.value)||0; };
+    f.appendChild(v); econ.appendChild(f);
+  });
+
+  const eg=document.getElementById("enemyGrid"); eg.innerHTML="";
+  Object.keys(cfg.enemies).forEach(k=>{
+    const d=cfg.enemies[k];
+    ["hp","speed","reward","armor"].forEach(fk=>{
+      const f=el("div","field"); f.appendChild(el("label",null,ECN[k]+"·"+fk));
+      const v=el("input"); v.type="number"; v.step="0.01"; v.value=d[fk];
+      v.oninput=()=>{ d[fk]=parseFloat(v.value)||0; };
+      f.appendChild(v); eg.appendChild(f);
+    });
+  });
+
+  const tg=document.getElementById("towerGrid"); tg.innerHTML="";
+  Object.keys(cfg.towers.defs).forEach(k=>{
+    const d=cfg.towers.defs[k];
+    ["dmg","rate","splash","slow","slow_dur","cost"].forEach(fk=>{
+      const f=el("div","field"); f.appendChild(el("label",null,k+"·"+fk));
+      const v=el("input"); v.type="number"; v.step="0.01"; v.value=d[fk];
+      v.oninput=()=>{ d[fk]=parseFloat(v.value)||0; };
+      f.appendChild(v); tg.appendChild(f);
+    });
+  });
+}
+
+// ---------------- 模拟 ----------------
+function simulate(){
+  // 自动重算 hp_scale/bonus/hp_pool
+  if (document.getElementById("autoCb").checked){
+    cfg.waves.forEach((w,i)=>{
+      const r = TD_Sim.recomputeWave(i, w.composition, cfg.enemies);
+      w.hp_scale=r.hp_scale; w.bonus=r.bonus; w.hp_pool=r.hp_pool;
+      refreshMeta(w,i);
+    });
+  }
+  const res = TD_Sim.simulate(cfg);
+  const sk=res.skilled, nv=res.naive, band=res.band;
+  const skLeak = sk.rows.reduce((a,r)=>a+r.leaked,0);
+  const nvLeak = nv.rows.reduce((a,r)=>a+r.leaked,0);
+  const lo=band.target_skilled_lives[0], hi=band.target_skilled_lives[1];
+  const skOk = sk.lives>0 && sk.lives>=lo && sk.lives<=hi;
+  const nvOk = nv.lives<=0;   // 新手期望失败
+
+  const box=document.getElementById("result"); box.innerHTML="";
+
+  const v1=el("div","verdict "+(skOk?"v-ok":"v-warn"));
+  v1.innerHTML=`熟练玩家：<b>${sk.lives>0?"通关":"失败"}</b> · 剩余生命 ${sk.lives}/${cfg.economy.lives} · 漏怪 ${skLeak} · 目标带 ${lo}–${hi}　${skOk?"✔ 命中":"✘ 需调整"}`;
+  box.appendChild(v1);
+  const v2=el("div","verdict "+(nvOk?"v-ok":"v-bad"));
+  v2.innerHTML=`新手玩家：<b>${nv.lives>0?"通关":"失败"}</b> · 剩余生命 ${nv.lives}/${cfg.economy.lives} · 漏怪 ${nvLeak}　${nvOk?"✔ 有策略深度（失败）":"✘ 太宽容（应失败）"}`;
+  box.appendChild(v2);
+
+  const t=el("table");
+  t.innerHTML=`<tr><th>波</th><th>熟练·漏</th><th>熟练·生命</th><th>新手·漏</th><th>新手·生命</th></tr>`;
+  const n=Math.max(sk.rows.length, nv.rows.length);
+  for(let i=0;i<n;i++){
+    const sr=sk.rows[i], nr=nv.rows[i];
+    const tr=el("tr");
+    tr.innerHTML=`<td>${i+1}</td>`+
+      `<td>${sr?sr.leaked:"-"}</td><td>${sr?Math.max(0,sr.lives):"-"}</td>`+
+      `<td>${nr?nr.leaked:"-"}</td><td>${nr?Math.max(0,nr.lives):"-"}</td>`;
+    t.appendChild(tr);
+  }
+  box.appendChild(t);
+  const tip=el("div","note"); tip.style.marginTop="8px";
+  tip.innerHTML = `目标：熟练玩家险胜留 ${lo}–${hi} 生命、新手失败。两策略都零漏怪 = 过易；熟练残血太多 = 仍偏易。`;
+  box.appendChild(tip);
+}
+
+// ---------------- 导出 ----------------
+function buildExport(){
+  if (document.getElementById("autoCb").checked){
+    cfg.waves.forEach((w,i)=>{ const r=TD_Sim.recomputeWave(i,w.composition,cfg.enemies); w.hp_scale=r.hp_scale; w.bonus=r.bonus; w.hp_pool=r.hp_pool; });
+  }
+  const out = JSON.parse(JSON.stringify(cfg));
+  out._meta = Object.assign({}, out._meta, { source:"wave_editor.html (M19)", version:"v4", note:"由波次编辑器编辑并重新标定" });
+  // 清掉运行期字段（base_cost 等不会进 JSON；CFG 里本来就没有 towers 运行期字段）
+  return out;
+}
+function exportCfg(){
+  const out = buildExport();
+  const txt = JSON.stringify(out, null, 2);
+  document.getElementById("jsonOut").value = txt;
+  const blob = new Blob([txt], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "m10_config.json";
+  a.click();
+}
+
+// ---------------- 事件 ----------------
+document.getElementById("btnSim").onclick = simulate;
+document.getElementById("btnExport").onclick = exportCfg;
+document.getElementById("btnReset").onclick = ()=>{ cfg = JSON.parse(JSON.stringify(CFG)); renderWaves(); renderAdvanced(); document.getElementById("jsonOut").value=""; document.getElementById("result").innerHTML='<span class="muted">已重置。</span>'; };
+document.getElementById("btnAdv").onclick = ()=>{
+  const p=document.getElementById("advPanel"); const open=p.style.display==="block";
+  p.style.display = open?"none":"block";
+  document.getElementById("btnAdv").textContent = open?"高级数值 ▾":"高级数值 ▴";
+};
+
+renderWaves();
+renderAdvanced();
+</script>
+</body>
+</html>

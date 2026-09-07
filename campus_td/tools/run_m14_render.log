@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "result": {
+    "rendered": "D:/AI/WorkBuddy/Workspace/2026-09-05-23-46-59/campus_td/previews/m14_plaque.png",
+    "engine": "CYCLES",
+    "objects": 592,
+    "mode": "m14_plaque",
+    "cam": [
+      0.0,
+      -62.0,
+      6.599999904632568
+    ],
+    "text_present": true,
+    "text_body": "晨光中学"
+  },
+  "stdout": "M11 result: {'m11': True, 'removed': 115, 'ground': {'ok': True, 'before': [96.0, 96.0, 0.0], 'after': [96.0, 96.0, 0.0], 'k': 1.0, 'loc': [0.0, 0.0]}, 'moved': {'Teach': {'n': 54, 'lights': 1, 'shell_center': [0.0, -29.0], 'delta': [0.0, 0.0], 'bbox': [-32.5, -37.5, 32.5, -20.5]}, 'Lab': {'n': 5, 'lights': 0, 'shell_center': [0.0, 31.0], 'delta': [0.0, 0.0], 'bbox': [-24.5, 23.5, 24.5, 38.5]}, 'Admin': {'n': 32, 'lights': 3, 'shell_center': [-38.0, 31.0], 'delta': [0.0, 0.0], 'bbox': [-45.0, 26.0, -31.0, 36.0]}, 'Library': {'n': 108, 'lights': 3, 'shell_center': [-38.0, 12.0], 'delta': [0.0, 0.0], 'bbox': [-46.0, 6.0, -30.0, 18.0]}, 'Dorm': {'n': 51, 'lights': 5, 'shell_center': [-38.0, -4.0], 'delta': [0.0, 0.0], 'bbox': [-45.5, -9.0, -30.5, 1.0]}, 'Gym': {'n': 19, 'lights': 0, 'shell_center': [32.0, 6.0], 'delta': [0.0, 0.0], 'bbox': [24.5, -0.5, 39.5, 12.5]}, 'Canteen': {'n': 36, 'lights': 1, 'shell_center': [36.0, -10.0], 'delta': [0.0, 0.0], 'bbox': [28.5, -15.5, 43.5, -4.5]}}, 'built': ['Plaza x2', 'Wall x5 + Coping x5', 'Gate', 'Flag', 'Beds x4', 'Trees x22 (88 obj)'], 'cam': [-99.0, -99.0, 140.0], 'verify': {'boxes': {'Teach': [-32.5, -37.5, 32.5, -20.5], 'Lab': [-24.5, 23.5, 24.5, 38.5], 'Admin': [-45.0, 26.0, -31.0, 36.0], 'Library': [-46.0, 6.0, -30.0, 18.0], 'Dorm': [-45.5, -9.0, -30.5, 1.0], 'Gym': [24.5, -0.5, 39.5, 12.5], 'Canteen': [28.5, -15.5, 43.5, -4.5]}, 'out_of_bounds': [], 'clash': [], 'path_min_dist': {'Teach': 7.5, 'Lab': 10.5, 'Admin': 15.81, 'Library': 8.0, 'Dorm': 9.39, 'Gym': 8.5, 'Canteen': 12.5}, 'path_violations': [], 'all_ok': True}, 'objects': 592}\nM14 result: {'ok': True, 'plaque': 'M11_GatePlaque', 'plaque_center': [0.0, -48.35, 6.6], 'plaque_size': [6.0, 0.12, 1.2], 'text': {'name': 'M14_Text', 'body': '晨光中学', 'size': 0.8500000238418579, 'extrude': 0.05000000074505806, 'dim': [3.27, 0.805, 0.116], 'loc': [0.0, -48.41, 6.6], 'rot': [1.571, 0.0, 0.0]}, 'font': {'used': 'SimHei Regular.001', 'tried': [{'file': 'simhei.ttf', 'ok': True, 'font': 'SimHei Regular.001', 'h': 0.923, 'w': 3.823, 'pass': True}]}, 'removed': 6, 'cam': [0.0, -62.0, 6.6], 'm14': True, 'objects': 592}\n"
+}

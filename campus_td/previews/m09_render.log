@@ -1,0 +1,4 @@
+{
+  "status": "error",
+  "message": "Traceback (most recent call last):\n  File \"C:\\Users\\Administrator\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\scripts\\addons\\blender_mcp_addon\\mcp_to_blender_server.py\", line 230, in _execute_code\n    exec(code, namespace)\n    ~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 42, in <module>\nTypeError: bpy_struct: item.attr = val: enum \"FFMPEG\" not found in ('AVIF', 'JPEG', 'OPEN_EXR', 'PNG', 'WEBP', 'BMP', 'CINEON', 'DPX', 'IRIS', 'JPEG2000', 'HDR', 'TARGA', 'TARGA_RAW', 'TIFF')\n"
+}

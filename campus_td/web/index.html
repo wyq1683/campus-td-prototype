@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="LBHzIWNjUUPU5AAV45zAPX">
+<head data-page-node-id="pquRTwBoBR8k0BgJLHPoGL">
+<meta charset="utf-8" data-page-node-id="NSqnMqKP653wTw69Zl5i8Q">
+<meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="0C6z4KiXc6pMPm9VggBdYX">
+<title>校园塔防 · 实时原型（M10C）</title>
+<style>
+  :root{
+    --ink:#e8f1f8; --dim:#8fa3b5; --panel:rgba(10,16,24,.72);
+    --line:rgba(120,180,220,.22); --ok:#38d9a9; --warn:#ffd43b; --bad:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;background:#000;overflow:hidden}
+  body{font:13px/1.5 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink)}
+  #gl{position:fixed;inset:0;width:100%;height:100%;display:block}
+
+  .panel{position:fixed;background:var(--panel);border:1px solid var(--line);
+         border-radius:10px;padding:10px 12px;backdrop-filter:blur(8px);user-select:none}
+
+  #hud{top:14px;left:14px;min-width:210px}
+  #hud .row{display:flex;justify-content:space-between;gap:14px;padding:2px 0}
+  #hud .k{color:var(--dim)}
+  #hud .v{font-variant-numeric:tabular-nums;font-weight:600}
+  #hud .big{font-size:20px;font-weight:700;letter-spacing:.5px}
+
+  #info{top:14px;right:14px;max-width:250px}
+  #info h4{margin:0 0 6px;font-size:12px;color:var(--dim);font-weight:600;letter-spacing:1px}
+  #waveComp{color:var(--dim);font-size:12px}
+  #tip{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);color:var(--dim);font-size:11.5px;line-height:1.6}
+
+  #bar{bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .btn{background:rgba(20,32,46,.9);border:1px solid var(--line);color:var(--ink);
+       border-radius:8px;padding:7px 11px;cursor:pointer;font:inherit;font-size:12px;
+       display:flex;flex-direction:column;align-items:center;min-width:78px;transition:.15s}
+  .btn:hover{border-color:rgba(140,210,255,.6);background:rgba(30,48,68,.95)}
+  .btn.on{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset;background:rgba(20,60,50,.9)}
+  .btn.dis{opacity:.38;cursor:not-allowed}
+  .btn .n{font-weight:600}
+  .btn .c{font-size:11px;color:var(--dim)}
+  .btn.wide{min-width:96px}
+
+  #log{bottom:14px;left:14px;max-width:280px;max-height:150px;overflow:hidden;
+       font-size:11.5px;color:var(--dim);line-height:1.55}
+  #log b{color:var(--ink);font-weight:600}
+
+  #banner{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+          flex-direction:column;gap:10px;background:rgba(0,0,0,.55);text-align:center}
+  #banner.show{display:flex}
+  #banner .t{font-size:34px;font-weight:800;letter-spacing:2px}
+  #banner .s{color:var(--dim)}
+</style>
+</head>
+<body data-page-node-id="2EGbWPdUNw5fY5n94H1qF9">
+<canvas id="gl" data-page-node-id="CxYpY285hbDGbTlbWMMtQS"></canvas>
+
+<div class="panel" id="hud" data-page-node-id="W0NfvUKA28vXxzqnPGb00c">
+  <div class="row" data-page-node-id="LW64WErjotCZZqcTC1ANA8"><span class="k" data-page-node-id="uvyz4wdhG9x60Wui19jPoP">波次</span><span class="v big" id="uWave" data-page-node-id="h19Ss1KacWh9PBt6mmPLOl">0 / 10</span></div>
+  <div class="row" data-page-node-id="6EwGjbHCf0O0SWZ7ux9Qor"><span class="k" data-page-node-id="UbpMs7d19iLBN8lm9DDEWl">基地生命</span><span class="v" id="uLives" data-page-node-id="1P9pmy3z2otm1Dz8CFE9hn">20</span></div>
+  <div class="row" data-page-node-id="NR1G66oHJDOFLgwel47Edr"><span class="k" data-page-node-id="D0BvnCUjr7OhC86vmKJSZN">金币</span><span class="v" id="uGold" data-page-node-id="FPr6tvDNircUV1DXrsSOtB">240</span></div>
+  <div class="row" data-page-node-id="qZn2tVNF7rLDt8TBHzSZnj"><span class="k" id="uPhaseK" data-page-node-id="7Aee0yHKHvwCdyTNYY2NK8">备战</span><span class="v" id="uPhase" data-page-node-id="OI8ZeaFbQONlSYCArwxaAC">8.0s</span></div>
+</div>
+
+<div class="panel" id="info" data-page-node-id="zvmprre9DhkehB7ommEJia">
+  <h4 data-page-node-id="hHMmhCB9IJ0RrPeCYPSVF1">本波构成</h4>
+  <div id="waveComp" data-page-node-id="J1iD5V3Fn9WW7flRVL72t4">—</div>
+  <div id="tip" data-page-node-id="QpGHDjK9buQDuM42TBmH4G">
+    拖拽旋转 · 滚轮缩放<br data-page-node-id="sgGfhxjtELktDktf5o5myj">
+    选塔型 → 点空位建造<br data-page-node-id="t7J0yGNfmlVgbDF7pqUQaW">
+    点已有塔 → 升级<br data-page-node-id="6IXNMAT3hGVUFeAGYXjj7r">
+    <b data-page-node-id="KFp2rJukVqgcA4wfY9U2Dx">空格</b> 提前开波 · <b data-page-node-id="CdDWzrxnlvxiDF2FiaiTND">R</b> 重开
+  </div>
+</div>
+
+<div class="panel" id="bar" data-page-node-id="3qBTiMCjQH6JMPQ7mZivqb"></div>
+<div class="panel" id="log" data-page-node-id="ilm6WMgClf1d3tUZEay2o9"></div>
+
+<div id="banner" data-page-node-id="XA3JDlv8h872fC3zDsZDKY"><div class="t" id="bTitle" data-page-node-id="oe2Sxxh7aYm7Rm3lNmcYgE"></div><div class="s" id="bSub" data-page-node-id="b6e9lpuccCbdjH7xseFR0J"></div></div>
+
+<script src="config.js"></script>
+<script>
+// ===========================================================================
+// 顶点着色器：全屏三角形（gl_VertexID，无需 VAO 数据）
+// ===========================================================================
+const VERT = `#version 300 es
+void main(){
+  vec2 p = vec2(gl_VertexID == 1 ? 3.0 : -1.0,
+                gl_VertexID == 2 ? 3.0 : -1.0);
+  gl_Position = vec4(p, 0.0, 1.0);
+}`;
+
+// ===========================================================================
+// 片元着色器
+//   1) SDF 球体追踪：地面 + 塔柱（不透明）
+//   2) 解析 ray-AABB：建筑当"玻璃体"，前到后混合 → 路径/塔可透视
+//   3) 屏幕空间：敌人光点（JS 投影后传入）
+//   4) 后处理：暗角 + ACES + 颗粒
+// ===========================================================================
+const FRAG = `#version 300 es
+precision highp float;
+out vec4 fragColor;
+
+uniform vec2  uRes;
+uniform float uTime;
+uniform vec3  uCamPos;
+uniform mat3  uCamMat;
+uniform float uFocal;
+
+uniform vec2  uWP[4];      // 路径控制点 (x, z)
+uniform int   uNB;
+uniform vec4  uBld[8];     // cx, cz, hx, hz
+uniform float uBldH[8];
+uniform int   uNT;
+uniform vec4  uTwr[8];     // x, z, typeIdx, level
+uniform float uRange;
+uniform int   uNE;
+uniform vec4  uEnm[40];    // screenX, screenY, radiusPx, typeIdx
+uniform float uEnmHp[40];
+uniform int   uNBm;
+uniform vec4  uBm[16];     // x1,z1,x2,z2（地面锁定线）
+
+const float PI = 3.14159265;
+
+// ---------- 基础 SDF ----------
+float sdSeg(vec2 p, vec2 a, vec2 b){
+  vec2 pa = p - a, ba = b - a;
+  float h = clamp(dot(pa, ba) / max(1e-6, dot(ba, ba)), 0.0, 1.0);
+  return length(pa - ba * h);
+}
+float sdCappedCyl(vec3 p, float h, float r){
+  vec2 d = abs(vec2(length(p.xz), p.y)) - vec2(r, h);
+  return min(max(d.x, d.y), 0.0) + length(max(d, 0.0));
+}
+float sdBox2(vec2 p, vec2 b){
+  vec2 q = abs(p) - b;
+  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
+}
+
+// ---------- 路径 ----------
+float pathDist(vec2 p){
+  float d = 1e9;
+  for(int i = 0; i < 3; i++) d = min(d, sdSeg(p, uWP[i], uWP[i + 1]));
+  return d;
+}
+float arcAt(vec2 p){
+  float cum = 0.0, best = 1e9, sBest = 0.0;
+  for(int i = 0; i < 3; i++){
+    vec2 a = uWP[i], b = uWP[i + 1];
+    vec2 ba = b - a;
+    float L = length(ba);
+    float h = clamp(dot(p - a, ba) / max(1e-6, dot(ba, ba)), 0.0, 1.0);
+    float d = length(p - (a + ba * h));
+    if(d < best){ best = d; sBest = cum + h * L; }
+    cum += L;
+  }
+  return sBest;
+}
+
+// ---------- 配色 ----------
+vec3 towerCol(int t){
+  if(t == 0) return vec3(0.88, 0.74, 0.30);   // BASIC 粉笔盒·金
+  if(t == 1) return vec3(0.32, 0.82, 0.95);   // RAPID 试卷连发·青
+  if(t == 2) return vec3(0.98, 0.56, 0.20);   // AOE 拖把横扫·橙
+  return vec3(0.72, 0.46, 0.98);              // SLOW 广播操·紫
+}
+vec3 enemyCol(int t){
+  if(t == 0) return vec3(0.58, 0.78, 0.48);   // Swarm
+  if(t == 1) return vec3(0.96, 0.86, 0.32);   // Rusher
+  if(t == 2) return vec3(0.36, 0.76, 1.00);   // Elite
+  if(t == 3) return vec3(0.96, 0.36, 0.30);   // Tank
+  return vec3(1.00, 0.36, 0.76);              // Boss
+}
+
+// ---------- 不透明场景：地面 + 塔柱 ----------
+float mapO(vec3 p, out int mid){
+  float d = p.y;
+  mid = 0;
+  for(int i = 0; i < 8; i++){
+    if(i >= uNT) break;
+    vec4 t = uTwr[i];
+    float lv = t.w;
+    float hgt = (lv < 0.5) ? 0.30 : (1.7 + 0.55 * lv);
+    float rad = (lv < 0.5) ? 1.45 : 0.85;
+    float dc = sdCappedCyl(p - vec3(t.x, hgt * 0.5, t.y), hgt * 0.5, rad);
+    if(dc < d){ d = dc; mid = 1 + i; }
+  }
+  return d;
+}
+vec3 calcNormal(vec3 p){
+  vec2 e = vec2(0.0025, 0.0);
+  int m;
+  return normalize(vec3(
+    mapO(p + e.xyy, m) - mapO(p - e.xyy, m),
+    mapO(p + e.yxy, m) - mapO(p - e.yxy, m),
+    mapO(p + e.yyx, m) - mapO(p - e.yyx, m)));
+}
+
+// ---------- 地面着色（路径 / 射程环 / 空位 / 光束 / AO / 阴影）----------
+vec3 groundShade(vec2 p){
+  vec3 col = vec3(0.052, 0.062, 0.082);
+
+  // 网格
+  vec2 g = abs(fract(p * 0.5) - 0.5);
+  float gl = smoothstep(0.022, 0.0, min(g.x, g.y));
+  col += vec3(0.045, 0.062, 0.082) * gl;
+
+  // 建筑足迹 AO
+  float ao = 1.0;
+  for(int i = 0; i < 8; i++){
+    if(i >= uNB) break;
+    vec4 b = uBld[i];
+    float d = sdBox2(p - vec2(b.x, b.y), vec2(b.z, b.w));
+    ao *= smoothstep(-2.6, 0.8, d);
+  }
+  col *= mix(0.32, 1.0, ao);
+
+  // 太阳投影 cookie（光来自 -x/+z 方向）
+  vec2 sd = normalize(vec2(-0.55, 0.83));
+  float sh = 1.0;
+  for(int i = 0; i < 8; i++){
+    if(i >= uNB) break;
+    vec4 b = uBld[i];
+    float d = sdBox2(p - sd * (uBldH[i] * 0.55) - vec2(b.x, b.y), vec2(b.z, b.w));
+    sh *= smoothstep(-1.4, 1.2, d);
+  }
+  col *= mix(0.42, 1.0, sh);
+
+  // 路径：实心带 + 流动光条
+  float dp = pathDist(p);
+  float s  = arcAt(p);
+  float core = smoothstep(1.95, 1.35, dp);
+  float edge = smoothstep(3.40, 1.95, dp);
+  float flow = fract(s * 0.055 - uTime * 0.55);
+  float dash = smoothstep(0.52, 0.18, abs(flow - 0.5));
+  vec3 pc = mix(vec3(0.08, 0.50, 0.82), vec3(0.42, 0.96, 1.0), dash);
+  col += pc * (core * 0.52 + edge * 0.15);
+
+  // 射程环 + 覆盖微光
+  for(int i = 0; i < 8; i++){
+    if(i >= uNT) break;
+    vec4 t = uTwr[i];
+    if(t.w < 0.5) continue;
+    float r = length(p - vec2(t.x, t.y));
+    float ring = smoothstep(0.34, 0.0, abs(r - uRange));
+    float fill = smoothstep(uRange, uRange - 2.6, r) * 0.030;
+    col += towerCol(int(t.z)) * (ring * 0.46 + fill);
+  }
+
+  // 空建造位：脉动双环
+  for(int i = 0; i < 8; i++){
+    if(i >= uNT) break;
+    vec4 t = uTwr[i];
+    if(t.w > 0.5) continue;
+    float r = length(p - vec2(t.x, t.y));
+    float r1 = smoothstep(0.15, 0.0, abs(r - 2.20));
+    float r2 = smoothstep(0.12, 0.0, abs(r - 1.65));
+    float pulse = 0.5 + 0.5 * sin(uTime * 2.4);
+    col += vec3(0.16, 0.86, 0.68) * (r1 * (0.34 + 0.26 * pulse) + r2 * 0.14);
+  }
+
+  // 地面锁定光束
+  for(int i = 0; i < 16; i++){
+    if(i >= uNBm) break;
+    vec4 bm = uBm[i];
+    col += vec3(1.0, 0.76, 0.36) * smoothstep(0.17, 0.0, sdSeg(p, bm.xy, bm.zw)) * 0.42;
+  }
+  return col;
+}
+
+// ---------- 解析 ray-AABB（建筑玻璃体）----------
+bool rayBox(vec3 ro, vec3 rd, vec3 bmin, vec3 bmax, out float t0, out vec3 nrm){
+  vec3 inv = 1.0 / rd;
+  vec3 ta = (bmin - ro) * inv;
+  vec3 tb = (bmax - ro) * inv;
+  vec3 tmn = min(ta, tb), tmx = max(ta, tb);
+  float tn = max(max(tmn.x, tmn.y), tmn.z);
+  float tf = min(min(tmx.x, tmx.y), tmx.z);
+  if(tf < max(tn, 0.0)) return false;
+  t0 = max(tn, 0.0);
+  vec3 c = (bmin + bmax) * 0.5;
+  vec3 q = ro + rd * t0 - c;
+  vec3 hs = (bmax - bmin) * 0.5;
+  vec3 d = abs(q) / max(hs, vec3(1e-4));
+  if(d.x > d.y && d.x > d.z)      nrm = vec3(sign(q.x), 0.0, 0.0);
+  else if(d.y > d.z)              nrm = vec3(0.0, sign(q.y), 0.0);
+  else                            nrm = vec3(0.0, 0.0, sign(q.z));
+  return true;
+}
+
+vec3 skyCol(vec3 rd){
+  float h = clamp(rd.y * 0.5 + 0.5, 0.0, 1.0);
+  return mix(vec3(0.018, 0.024, 0.036), vec3(0.045, 0.070, 0.105), h);
+}
+
+vec3 aces(vec3 x){
+  return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+}
+float hash21(vec2 p){
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+void main(){
+  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;
+  vec3 ro = uCamPos;
+  vec3 rd = normalize(uCamMat * vec3(uv, uFocal));
+
+  // ---- 1) 不透明层 ----
+  float t = 0.0;
+  int mid = 0;
+  bool hit = false;
+  for(int i = 0; i < 96; i++){
+    vec3 p = ro + rd * t;
+    float d = mapO(p, mid);
+    if(d < 0.0018 * t + 0.004){ hit = true; break; }
+    t += d;
+    if(t > 240.0) break;
+  }
+
+  vec3 col;
+  if(!hit){
+    col = skyCol(rd);
+    t = 1e9;
+  } else {
+    vec3 p = ro + rd * t;
+    if(mid == 0){
+      col = groundShade(p.xz);
+    } else {
+      int ti = mid - 1;
+      vec4 tw = uTwr[ti];
+      vec3 n  = calcNormal(p);
+      float lv = tw.w;
+      if(lv < 0.5){
+        // 空位：矮台
+        col = vec3(0.06, 0.16, 0.14) + vec3(0.10, 0.45, 0.36) * (0.35 + 0.25 * sin(uTime * 2.4));
+      } else {
+        vec3 tc = towerCol(int(tw.z));
+        float lam = clamp(dot(n, normalize(vec3(-0.55, 0.78, 0.30))), 0.0, 1.0);
+        col = tc * (0.16 + 0.34 * lam) + tc * 0.30;   // 自发光让它从玻璃里透出来
+      }
+    }
+  }
+
+  // ---- 2) 建筑玻璃体：前到后混合 ----
+  float bt[8];
+  vec3  bn[8];
+  int   bi[8];
+  for(int i = 0; i < 8; i++){ bt[i] = -1.0; bn[i] = vec3(0.0); bi[i] = 0; }
+  int nb = 0;
+  for(int i = 0; i < 8; i++){
+    if(i >= uNB) break;
+    vec4 b = uBld[i];
+    vec3 bmin = vec3(b.x - b.z, 0.0, b.y - b.w);
+    vec3 bmax = vec3(b.x + b.z, uBldH[i], b.y + b.w);
+    float t0; vec3 nn;
+    if(rayBox(ro, rd, bmin, bmax, t0, nn) && t0 < t){
+      bt[nb] = t0; bn[nb] = nn; bi[nb] = i; nb++;
+    }
+  }
+  for(int k = 0; k < 4; k++){
+    int best = -1;
+    float bv = 1e9;
+    for(int i = 0; i < 8; i++){
+      if(i >= nb) break;
+      if(bt[i] >= 0.0 && bt[i] < bv){ bv = bt[i]; best = i; }
+    }
+    if(best < 0) break;
+    bt[best] = -1.0;
+    int idx = bi[best];
+    vec3 n = bn[best];
+    vec3 p = ro + rd * bv;
+    float fres = pow(1.0 - clamp(abs(dot(n, -rd)), 0.0, 1.0), 3.0);
+    // 楼层横带（层高 3.9m，与 Blender 场景一致）
+    float band = smoothstep(0.46, 0.50, abs(fract(p.y / 3.9) - 0.5));
+    vec3 gc = vec3(0.085, 0.135, 0.205);
+    gc += vec3(0.10, 0.36, 0.62) * fres * 0.95;
+    gc += vec3(0.09, 0.28, 0.52) * band * 0.28;
+    if(n.y > 0.5) gc += vec3(0.05, 0.10, 0.16);        // 屋顶
+    float a = 0.30 + fres * 0.34;
+    col = mix(col, gc, clamp(a, 0.0, 0.86));
+  }
+
+  // ---- 3) 敌人：屏幕空间光点 ----
+  for(int i = 0; i < 40; i++){
+    if(i >= uNE) break;
+    vec4 e = uEnm[i];
+    float d = length(gl_FragCoord.xy - e.xy) - e.z;
+    float hp = uEnmHp[i];
+    vec3 ec = enemyCol(int(e.w));
+    float core = smoothstep(1.2, 0.0, d);
+    float halo = smoothstep(e.z * 3.4, 0.0, d);
+    col += ec * (core * (0.55 + 0.45 * hp) + halo * halo * 0.16);
+  }
+
+  // ---- 4) 后处理 ----
+  vec2 q = gl_FragCoord.xy / uRes;
+  col *= 0.5 + 0.5 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.24);  // 暗角
+  col = aces(col * 1.06);
+  col += (hash21(gl_FragCoord.xy + fract(uTime) * 91.7) - 0.5) * 0.020;        // 颗粒
+  fragColor = vec4(col, 1.0);
+}`;
+
+// ===========================================================================
+// 常量与工具
+// ===========================================================================
+const TYPE_IDX = { BASIC: 0, RAPID: 1, AOE: 2, SLOW: 3 };
+const TYPE_LIST = ["BASIC", "RAPID", "AOE", "SLOW"];
+const TYPE_CN = { BASIC: "粉笔盒", RAPID: "试卷连发", AOE: "拖把横扫", SLOW: "广播操" };
+const EKEYS = ["Swarm", "Rusher", "Elite", "Tank", "Boss"];
+const ECN = { Swarm: "抄作业小队", Rusher: "迟到生", Elite: "学霸", Tank: "教导主任", Boss: "校长" };
+
+const MAXE = 40, MAXB = 16;
+const WP = [[-22, -13], [16, -13], [16, 13], [-22, 13]];
+const PATH_LEN = CFG.level.path_len_m;
+const RANGE = 13.0;
+const FOCAL = 1.6;
+const UPG_DMG = CFG.towers.upgrade.dmg_mult;
+const UPG_SLOW = CFG.towers.upgrade.slow_add;
+const UPG_DUR = CFG.towers.upgrade.slow_dur_add;
+const SLOW_CAP = CFG.towers.upgrade.slow_hard_cap;
+const COMB_CAP = CFG.towers.upgrade.combined_slow_cap;
+
+// 弧长 → 世界坐标（Blender XY）
+function ptAt(s) {
+  if (s <= 38) return [-22 + s, -13];
+  if (s <= 64) return [16, -13 + (s - 38)];
+  return [16 - (s - 64), 13];
+}
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+const add3 = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+
+// ===========================================================================
+// 状态
+// ===========================================================================
+let towers = [], enemies = [], queue = [], beams = [], logLines = [];
+let gold = 0, lives = 0, waveIdx = 0, phase = "prep", prepT = 0, spawnT = 0, leakCount = 0;
+let selType = null;
+// M11 后场地 46m -> 96m：默认视距放宽到能看见整圈建筑（拉近仍可专注内庭院战场）
+let yaw = 0.0, pitch = 0.88, dist = 108;
+const CX = -3.0, CZ = 0.0;
+
+function initTowers() {
+  towers = [];
+  for (const f of CFG.towers.fixed)
+    towers.push({ name: f.name, type: f.type, ti: TYPE_IDX[f.type], cover: f.cover.slice(),
+                  pos: f.pos.slice(), level: 1, cd: 0, built: true, fixed: true });
+  for (const s of CFG.towers.slots)
+    towers.push({ name: s.name, type: null, ti: 0, cover: s.cover.slice(),
+                  pos: s.pos.slice(), level: 0, cd: 0, built: false, fixed: false, desc: s.desc });
+}
+function addLog(s) {
+  logLines.unshift(s);
+  if (logLines.length > 9) logLines.pop();
+  document.getElementById("log").innerHTML =
+    logLines.map((l, i) => (i === 0 ? "<b>" + l + "</b>" : l)).join("<br>");
+}
+function reset() {
+  initTowers();
+  gold = CFG.economy.start_gold;
+  lives = CFG.economy.lives;
+  waveIdx = 0; phase = "prep"; prepT = 8.0;
+  enemies = []; queue = []; beams = []; spawnT = 0; logLines = []; leakCount = 0;
+  addLog("新的一局 · 起始金币 " + gold);
+  document.getElementById("banner").classList.remove("show");
+}
+
+// ---- 派生数值（与 m10_balance.py 完全一致）----
+function tDmg(tw) {
+  const d = CFG.towers.defs[tw.type];
+  return d.slow > 0 ? d.dmg : d.dmg * Math.pow(UPG_DMG, tw.level - 1);
+}
+function tSlow(tw) {
+  const d = CFG.towers.defs[tw.type];
+  return d.slow <= 0 ? 0 : Math.min(SLOW_CAP, d.slow + UPG_SLOW * (tw.level - 1));
+}
+function tDur(tw) {
+  const d = CFG.towers.defs[tw.type];
+  return d.slow <= 0 ? 0 : d.slow_dur + UPG_DUR * (tw.level - 1);
+}
+function tCost(tw) { return Math.floor(CFG.towers.defs[tw.type].cost * 0.8 * tw.level); }
+
+// 投资回报率（与 m10_balance.py 的 Tower.roi 同算法）：
+//   减速塔 → 按重叠区其他塔的 DPS 折算停留时间增量；输出塔 → 按是否被减速力场覆盖加权。
+function roi(tw, all) {
+  const cost = Math.max(1, tCost(tw));
+  const def = CFG.towers.defs[tw.type];
+  const a = tw.cover[0], b = tw.cover[1];
+  if (def.slow > 0) {
+    const ds = Math.max(0, Math.min(UPG_SLOW, SLOW_CAP - tSlow(tw)));
+    if (ds <= 0) return 0;
+    let od = 0;
+    for (const o of all) {
+      if (o === tw || !o.built) continue;
+      if (o.cover[0] < b && o.cover[1] > a) od += tDmg(o) * CFG.towers.defs[o.type].rate;
+    }
+    return od * ((b - a) / 3.0) * ds / Math.pow(1 - tSlow(tw), 2) / cost;
+  }
+  let sm = 1.0;
+  for (const o of all) {
+    if (!o.built || CFG.towers.defs[o.type].slow <= 0) continue;
+    if (o.cover[0] < b && o.cover[1] > a) sm = Math.max(sm, 1 / (1 - tSlow(o)));
+  }
+  const gainDps = tDmg(tw) * (UPG_DMG - 1) * def.rate;
+  return ((b - a) / 3.0) * gainDps * sm / cost;
+}
+
+function buildSpawn(idx) {
+  const w = CFG.waves[idx];
+  const out = [];
+  let t = 0;
+  for (const c of w.composition) {
+    const type = c[0], n = c[1], gap = CFG.spawn_gap[type];
+    for (let i = 0; i < n; i++) { out.push({ type: type, hp: CFG.enemies[type].hp * w.hp_scale, t: t }); t += gap; }
+  }
+  return out;
+}
+
+// ===========================================================================
+// 仿真主循环
+// ===========================================================================
+function startWave() {
+  if (phase !== "prep") return;
+  queue = buildSpawn(waveIdx);
+  spawnT = 0; phase = "combat";
+  const w = CFG.waves[waveIdx];
+  addLog("第 " + (waveIdx + 1) + " 波：" + w.desc);
+}
+
+function update(dt) {
+  if (phase === "prep") {
+    prepT -= dt;
+    if (prepT <= 0) startWave();
+    return;
+  }
+  if (phase !== "combat") return;
+
+  spawnT += dt;
+  while (queue.length && queue[0].t <= spawnT) {
+    const s = queue.shift();
+    enemies.push({ type: s.type, ti: EKEYS.indexOf(s.type), hp: s.hp, maxhp: s.hp,
+                   pos: 0, slows: {}, alive: true });
+  }
+
+  beams = [];
+  for (const tw of towers) {
+    if (!tw.built) continue;
+    const def = CFG.towers.defs[tw.type];
+    tw.cd -= dt;
+    if (tw.cd > 0) continue;
+    const a = tw.cover[0], b = tw.cover[1];
+    let tgt = null;
+    for (const e of enemies) {
+      if (!e.alive || e.pos < a || e.pos > b) continue;
+      if (!tgt || e.pos > tgt.pos) tgt = e;            // 打最靠近基地的
+    }
+    if (!tgt) continue;
+
+    const dmg = tDmg(tw), sl = tSlow(tw), du = tDur(tw);
+    tgt.hp -= dmg * (1 - CFG.enemies[tgt.type].armor);
+    if (def.splash > 0) {
+      for (const e of enemies) {
+        if (e === tgt || !e.alive || e.pos < a || e.pos > b) continue;
+        if (Math.abs(e.pos - tgt.pos) <= def.splash)
+          e.hp -= dmg * (1 - CFG.enemies[e.type].armor);
+      }
+    }
+    if (sl > 0) {
+      for (const e of enemies) {
+        if (!e.alive || e.pos < a || e.pos > b) continue;
+        e.slows[tw.name] = { until: spawnT + du, f: sl };   // 减速力场：覆盖区全体
+      }
+    }
+    if (beams.length < MAXB) {
+      const tp = ptAt(tgt.pos);
+      beams.push([tw.pos[0], tw.pos[1], tp[0], tp[1]]);
+    }
+    tw.cd = 1 / def.rate;
+  }
+
+  for (const e of enemies) {
+    if (!e.alive) continue;
+    if (e.hp <= 0) { e.alive = false; gold += CFG.enemies[e.type].reward; continue; }
+    let f = 1.0;
+    for (const k in e.slows) {
+      const s = e.slows[k];
+      if (spawnT < s.until) f *= (1 - s.f); else delete e.slows[k];
+    }
+    f = Math.max(f, 1 - COMB_CAP);
+    e.pos += CFG.enemies[e.type].speed * f * dt;
+    if (e.pos >= PATH_LEN) {
+      e.alive = false;
+      lives -= CFG.leak_cost[e.type];
+      leakCount++;
+      addLog(ECN[e.type] + " 突破防线！生命 -" + CFG.leak_cost[e.type]);
+    }
+  }
+  enemies = enemies.filter(e => e.alive);
+
+  if (!queue.length && !enemies.length) {
+    const w = CFG.waves[waveIdx];
+    gold += w.bonus;
+    addLog("第 " + (waveIdx + 1) + " 波清空，清波奖励 +" + w.bonus);
+    waveIdx++;
+    if (waveIdx >= CFG.waves.length) {
+      phase = "won";
+      showBanner("通 关", "剩余生命 " + lives + " / " + CFG.economy.lives);
+      return;
+    }
+    phase = "prep"; prepT = 8.0;
+  }
+  if (lives <= 0) {
+    lives = 0; phase = "lost";
+    showBanner("基 地 失 守", "倒在第 " + (waveIdx + 1) + " 波");
+  }
+}
+function showBanner(t, s) {
+  document.getElementById("bTitle").textContent = t;
+  document.getElementById("bSub").textContent = s;
+  document.getElementById("banner").classList.add("show");
+}
+
+// ===========================================================================
+// WebGL 初始化
+// ===========================================================================
+// 兜底：着色器编译/链接失败时把日志显示出来，而不是留一个黑屏
+window.addEventListener("error", function (ev) {
+  const msg = String((ev && ev.message) || "");
+  document.title = "ERR: " + msg.slice(0, 300);
+  const t = document.getElementById("bTitle"), s = document.getElementById("bSub");
+  if (t && s) {
+    t.textContent = "初始化失败";
+    s.textContent = msg.slice(0, 600);
+    document.getElementById("banner").classList.add("show");
+  }
+});
+
+const cv = document.getElementById("gl");
+const gl = cv.getContext("webgl2", { antialias: false, alpha: false, powerPreference: "high-performance" });
+if (!gl) {
+  document.body.innerHTML = '<div style="color:#fff;padding:48px;font-size:16px">本页面需要 WebGL2 支持，请换用较新的浏览器。</div>';
+  throw new Error("no webgl2");
+}
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src.trim());
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+    throw new Error(gl.getShaderInfoLog(s) + "\n" + src.split("\n").map((l, i) => (i + 1) + ": " + l).join("\n"));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+gl.bindVertexArray(gl.createVertexArray());
+
+const U = {};
+for (const n of ["uRes", "uTime", "uCamPos", "uCamMat", "uFocal", "uNB", "uNT", "uRange", "uNE", "uNBm"])
+  U[n] = gl.getUniformLocation(prog, n);
+for (const n of ["uWP", "uBld", "uBldH", "uTwr", "uEnm", "uEnmHp", "uBm"])
+  U[n] = gl.getUniformLocation(prog, n + "[0]");
+
+// ===========================================================================
+// 相机与投影
+// ===========================================================================
+function camBasis() {
+  const cp = Math.cos(pitch), sp = Math.sin(pitch), cy = Math.cos(yaw), sy = Math.sin(yaw);
+  const pos = [CX + dist * cp * sy, dist * sp, CZ + dist * cp * cy];
+  const fwd = norm(sub([CX, 0, CZ], pos));
+  const right = norm(cross(fwd, [0, 1, 0]));
+  const up = cross(right, fwd);
+  return { pos, fwd, right, up };
+}
+// 世界点 → 设备像素坐标（与着色器同一套投影）
+function project(px, py, pz, W, H) {
+  const c = camBasis();
+  const r = [px - c.pos[0], py - c.pos[1], pz - c.pos[2]];
+  const z = dot(r, c.fwd);
+  if (z <= 0.05) return null;
+  return [FOCAL * dot(r, c.right) / z * H + 0.5 * W,
+          FOCAL * dot(r, c.up) / z * H + 0.5 * H, z];
+}
+// 屏幕点 → 地面 (x, z)
+function pickWorld(clientX, clientY) {
+  const sx = cv.width / cv.clientWidth;
+  const fx = (clientX - cv.getBoundingClientRect().left) * sx;
+  const fy = (cv.clientHeight - (clientY - cv.getBoundingClientRect().top)) * sx;
+  const W = cv.width, H = cv.height;
+  const uvx = (fx - 0.5 * W) / H, uvy = (fy - 0.5 * H) / H;
+  const c = camBasis();
+  const rd = norm(add3(add3(mul(c.right, uvx), mul(c.up, uvy)), mul(c.fwd, FOCAL)));
+  if (Math.abs(rd[1]) < 1e-6) return null;
+  const t = -c.pos[1] / rd[1];
+  if (t < 0) return null;
+  return [c.pos[0] + rd[0] * t, c.pos[2] + rd[2] * t];
+}
+
+// ===========================================================================
+// 交互
+// ===========================================================================
+function onClick(wx, wz) {
+  if (wx === null) return;
+  let best = null, bd = 3.8;
+  for (const tw of towers) {
+    const d = Math.hypot(tw.pos[0] - wx, tw.pos[1] - wz);
+    if (d < bd) { bd = d; best = tw; }
+  }
+  if (!best) return;
+  if (!best.built) {
+    if (!selType) { addLog("先在下方选一个塔型"); return; }
+    const cost = CFG.towers.defs[selType].cost;
+    if (gold < cost) { addLog("金币不足，建造 " + selType + " 需 " + cost); return; }
+    gold -= cost;
+    best.type = selType; best.ti = TYPE_IDX[selType]; best.level = 1; best.built = true;
+    addLog(best.name + " 建造 " + selType + "（" + TYPE_CN[selType] + "）-" + cost);
+  } else {
+    const c = tCost(best);
+    if (gold < c) { addLog("金币不足，升级需 " + c); return; }
+    gold -= c; best.level++;
+    addLog(best.name + " → Lv" + best.level + " -" + c);
+  }
+}
+
+let drag = null;
+cv.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY, ox: e.clientX, oy: e.clientY, moved: 0 }; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener("pointermove", e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  drag.moved += Math.abs(dx) + Math.abs(dy);
+  yaw -= dx * 0.006;
+  pitch = Math.max(0.22, Math.min(1.45, pitch + dy * 0.005));
+  drag.x = e.clientX; drag.y = e.clientY;
+});
+cv.addEventListener("pointerup", e => {
+  if (drag && drag.moved < 6) { const w = pickWorld(e.clientX, e.clientY); if (w) onClick(w[0], w[1]); }
+  drag = null;
+});
+cv.addEventListener("wheel", e => { e.preventDefault(); dist = Math.max(28, Math.min(280, dist * (1 + Math.sign(e.deltaY) * 0.09))); }, { passive: false });
+addEventListener("keydown", e => {
+  if (e.code === "Space") { e.preventDefault(); startWave(); }
+  if (e.key === "r" || e.key === "R") reset();
+});
+
+function buildBar() {
+  const bar = document.getElementById("bar");
+  bar.innerHTML = "";
+  for (const t of TYPE_LIST) {
+    const d = CFG.towers.defs[t];
+    const b = document.createElement("div");
+    b.className = "btn"; b.dataset.t = t;
+    b.innerHTML = '<span class="n">' + t + '</span><span class="c">' + TYPE_CN[t] + ' · ' + d.cost + '金</span>';
+    b.onclick = () => { selType = (selType === t) ? null : t; syncBar(); };
+    bar.appendChild(b);
+  }
+  const go = document.createElement("div");
+  go.className = "btn wide"; go.id = "btnGo";
+  go.innerHTML = '<span class="n">空格</span><span class="c">提前开波</span>';
+  go.onclick = startWave;
+  bar.appendChild(go);
+  const rs = document.createElement("div");
+  rs.className = "btn wide";
+  rs.innerHTML = '<span class="n">R</span><span class="c">重开</span>';
+  rs.onclick = reset;
+  bar.appendChild(rs);
+}
+function syncBar() {
+  document.querySelectorAll("#bar .btn").forEach(b => {
+    const t = b.dataset.t;
+    if (!t) return;
+    b.classList.toggle("on", selType === t);
+    b.classList.toggle("dis", gold < CFG.towers.defs[t].cost);
+  });
+}
+
+// ===========================================================================
+// 渲染
+// ===========================================================================
+const bldArr = new Float32Array(32), bldHArr = new Float32Array(8);
+const twrArr = new Float32Array(32), enmArr = new Float32Array(160), enmHpArr = new Float32Array(40);
+const bmArr = new Float32Array(64), wpArr = new Float32Array(8);
+for (let i = 0; i < 4; i++) { wpArr[i * 2] = WP[i][0]; wpArr[i * 2 + 1] = WP[i][1]; }
+
+function initStatic() {
+  const bs = CFG.buildings;
+  for (let i = 0; i < Math.min(8, bs.length); i++) {
+    const b = bs[i];
+    bldArr[i * 4] = (b.x0 + b.x1) / 2; bldArr[i * 4 + 1] = (b.y0 + b.y1) / 2;
+    bldArr[i * 4 + 2] = (b.x1 - b.x0) / 2; bldArr[i * 4 + 3] = (b.y1 - b.y0) / 2;
+    bldHArr[i] = b.h;
+  }
+}
+
+function hud() {
+  document.getElementById("uWave").textContent = Math.min(waveIdx + 1, CFG.waves.length) + " / " + CFG.waves.length;
+  document.getElementById("uLives").textContent = lives;
+  document.getElementById("uGold").textContent = gold;
+  const w = CFG.waves[Math.min(waveIdx, CFG.waves.length - 1)];
+  document.getElementById("waveComp").innerHTML = phase === "won" ? "全部波次完成"
+    : w.composition.map(c => ECN[c[0]] + " ×" + c[1]).join("<br>");
+  if (phase === "prep") {
+    document.getElementById("uPhaseK").textContent = "备战倒计时";
+    document.getElementById("uPhase").textContent = prepT.toFixed(1) + "s";
+  } else if (phase === "combat") {
+    document.getElementById("uPhaseK").textContent = "战斗中";
+    document.getElementById("uPhase").textContent = "剩 " + (queue.length + enemies.length);
+  } else {
+    document.getElementById("uPhaseK").textContent = "状态";
+    document.getElementById("uPhase").textContent = phase === "won" ? "通关" : "失守";
+  }
+  syncBar();
+}
+
+let last = performance.now(), tAcc = 0;
+function frame(now) {
+  let dt = (now - last) / 1000; last = now;
+  dt = Math.min(dt, 0.05);
+  tAcc += dt;
+
+  update(dt);
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.floor(cv.clientWidth * dpr), H = Math.floor(cv.clientHeight * dpr);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  gl.viewport(0, 0, W, H);
+
+  const c = camBasis();
+  gl.uniform2f(U.uRes, W, H);
+  gl.uniform1f(U.uTime, tAcc);
+  gl.uniform3f(U.uCamPos, c.pos[0], c.pos[1], c.pos[2]);
+  gl.uniformMatrix3fv(U.uCamMat, false, new Float32Array([
+    c.right[0], c.right[1], c.right[2],
+    c.up[0], c.up[1], c.up[2],
+    c.fwd[0], c.fwd[1], c.fwd[2]]));
+  gl.uniform1f(U.uFocal, FOCAL);
+  gl.uniform2fv(U.uWP, wpArr);
+  gl.uniform1i(U.uNB, Math.min(8, CFG.buildings.length));
+  gl.uniform4fv(U.uBld, bldArr);
+  gl.uniform1fv(U.uBldH, bldHArr);
+
+  gl.uniform1i(U.uNT, towers.length);
+  for (let i = 0; i < towers.length; i++) {
+    const t = towers[i];
+    twrArr[i * 4] = t.pos[0]; twrArr[i * 4 + 1] = t.pos[1];
+    twrArr[i * 4 + 2] = t.ti; twrArr[i * 4 + 3] = t.built ? t.level : 0;
+  }
+  gl.uniform4fv(U.uTwr, twrArr);
+  gl.uniform1f(U.uRange, RANGE);
+
+  // 敌人：JS 投影成屏幕光点（比在着色器里做 SDF 求交便宜得多）
+  let ne = 0;
+  for (const e of enemies) {
+    if (ne >= MAXE) break;
+    const p = ptAt(e.pos);
+    const pr = project(p[0], 0.55, p[1], W, H);
+    if (!pr) continue;
+    const r = FOCAL * 0.55 / pr[2] * H;
+    if (pr[0] < -r * 4 || pr[0] > W + r * 4 || pr[1] < -r * 4 || pr[1] > H + r * 4) continue;
+    enmArr[ne * 4] = pr[0]; enmArr[ne * 4 + 1] = pr[1];
+    enmArr[ne * 4 + 2] = Math.max(2.0, r); enmArr[ne * 4 + 3] = e.ti;
+    enmHpArr[ne] = Math.max(0, e.hp / e.maxhp);
+    ne++;
+  }
+  gl.uniform1i(U.uNE, ne);
+  gl.uniform4fv(U.uEnm, enmArr);
+  gl.uniform1fv(U.uEnmHp, enmHpArr);
+
+  const nb = Math.min(MAXB, beams.length);
+  for (let i = 0; i < nb; i++) {
+    bmArr[i * 4] = beams[i][0]; bmArr[i * 4 + 1] = beams[i][1];
+    bmArr[i * 4 + 2] = beams[i][2]; bmArr[i * 4 + 3] = beams[i][3];
+  }
+  gl.uniform1i(U.uNBm, nb);
+  gl.uniform4fv(U.uBm, bmArr);
+
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  hud();
+  requestAnimationFrame(frame);
+}
+
+// ===========================================================================
+// 启动
+// ===========================================================================
+// 无渲染自测：?selftest=1 —— 用"熟练玩家"策略跑完 10 波，把结果写进 title 便于自动化核对。
+// 用于交叉验证浏览器端 JS 与 campus_td/build/m10_balance.py 的数值是否一致。
+const PLAN_GOOD = [["SLOT_A", "AOE"], ["SLOT_B", "RAPID"], ["SLOT_C", "SLOW"], ["SLOT_D", "AOE"]];
+function runSelfTest() {
+  const rows = [];
+  for (let w = 0; w < CFG.waves.length; w++) {
+    for (const p of PLAN_GOOD) {
+      const tw = towers.filter(t => t.name === p[0])[0];
+      if (tw && !tw.built) {
+        const c = CFG.towers.defs[p[1]].cost;
+        if (gold >= c) { gold -= c; tw.type = p[1]; tw.ti = TYPE_IDX[p[1]]; tw.level = 1; tw.built = true; }
+      }
+    }
+    for (let k = 0; k < 3; k++) {
+      const cands = towers.filter(t => t.built && gold >= tCost(t));
+      if (!cands.length) break;
+      cands.sort((x, y) => roi(y, towers) - roi(x, towers));
+      gold -= tCost(cands[0]); cands[0].level++;
+    }
+    const l0 = leakCount;
+    startWave();
+    let guard = 0;
+    while (phase === "combat" && guard++ < 40000) update(0.05);
+    rows.push((w + 1) + ":" + (leakCount - l0));
+    if (phase === "lost" || phase === "won") break;
+  }
+  document.title = "SELFTEST " + phase + " lives=" + lives + " leaks=" + leakCount +
+                   " gold=" + gold + " | " + rows.join(" ");
+  addLog("自测完成：" + phase + " 生命 " + lives + " 漏怪 " + leakCount);
+}
+
+initStatic();
+buildBar();
+reset();
+if (location.search.indexOf("selftest") >= 0) runSelfTest();
+else requestAnimationFrame(frame);
+</script>
+</body>
+</html>

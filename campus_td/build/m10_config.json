@@ -1,0 +1,433 @@
+{
+  "_meta": {
+    "source": "campus_td/build/m10_balance.py",
+    "version": "v4",
+    "note": "数值经双策略仿真验证；几何来自 Blender 实测探针"
+  },
+  "level": {
+    "path_len_m": 102.0,
+    "legs": [
+      {
+        "name": "南腿",
+        "arc": [
+          0.0,
+          38.0
+        ],
+        "axis": "y=-13, x:-22→16"
+      },
+      {
+        "name": "东腿",
+        "arc": [
+          38.0,
+          64.0
+        ],
+        "axis": "x=16, y:-13→13"
+      },
+      {
+        "name": "北腿",
+        "arc": [
+          64.0,
+          102.0
+        ],
+        "axis": "y=13, x:16→-22"
+      }
+    ],
+    "start": [
+      -22.0,
+      -13.0
+    ],
+    "base": [
+      -22.0,
+      13.0
+    ],
+    "blind_spots": [
+      [
+        13.0,
+        25.0
+      ],
+      [
+        77.0,
+        89.0
+      ]
+    ]
+  },
+  "towers": {
+    "fixed": [
+      {
+        "name": "T1_RAPID",
+        "type": "RAPID",
+        "cover": [
+          0.0,
+          13.0
+        ],
+        "pos": [
+          -22.0,
+          -13.0
+        ]
+      },
+      {
+        "name": "T2_AOE",
+        "type": "AOE",
+        "cover": [
+          25.0,
+          51.0
+        ],
+        "pos": [
+          16.0,
+          -13.0
+        ]
+      },
+      {
+        "name": "T3_SLOW",
+        "type": "SLOW",
+        "cover": [
+          51.0,
+          77.0
+        ],
+        "pos": [
+          16.0,
+          13.0
+        ]
+      },
+      {
+        "name": "T4_BASIC",
+        "type": "BASIC",
+        "cover": [
+          89.0,
+          102.0
+        ],
+        "pos": [
+          -22.0,
+          13.0
+        ]
+      }
+    ],
+    "slots": [
+      {
+        "name": "SLOT_A",
+        "cover": [
+          6.0,
+          32.0
+        ],
+        "pos": [
+          -3.0,
+          -13.0
+        ],
+        "desc": "南腿中段·补盲区 A"
+      },
+      {
+        "name": "SLOT_B",
+        "cover": [
+          70.0,
+          93.0
+        ],
+        "pos": [
+          -3.0,
+          13.0
+        ],
+        "desc": "北腿中段·补盲区 B"
+      },
+      {
+        "name": "SLOT_C",
+        "cover": [
+          38.0,
+          64.0
+        ],
+        "pos": [
+          16.0,
+          0.0
+        ],
+        "desc": "东腿直道·与 T2/T3 叠杀区"
+      },
+      {
+        "name": "SLOT_D",
+        "cover": [
+          78.0,
+          102.0
+        ],
+        "pos": [
+          -11.0,
+          13.0
+        ],
+        "desc": "基地前·最后防线（与 T4 叠加）"
+      }
+    ],
+    "defs": {
+      "BASIC": {
+        "dmg": 22.0,
+        "rate": 1.0,
+        "splash": 0.0,
+        "slow": 0.0,
+        "slow_dur": 0.0,
+        "cost": 80
+      },
+      "RAPID": {
+        "dmg": 9.0,
+        "rate": 3.0,
+        "splash": 0.0,
+        "slow": 0.0,
+        "slow_dur": 0.0,
+        "cost": 120
+      },
+      "AOE": {
+        "dmg": 30.0,
+        "rate": 0.7,
+        "splash": 4.0,
+        "slow": 0.0,
+        "slow_dur": 0.0,
+        "cost": 150
+      },
+      "SLOW": {
+        "dmg": 6.0,
+        "rate": 1.0,
+        "splash": 0.0,
+        "slow": 0.4,
+        "slow_dur": 2.6,
+        "cost": 100
+      }
+    },
+    "upgrade": {
+      "dmg_mult": 1.4,
+      "slow_add": 0.05,
+      "slow_dur_add": 0.4,
+      "slow_hard_cap": 0.6,
+      "combined_slow_cap": 0.75,
+      "cost_formula": "int(base_cost * 0.8 * level)"
+    }
+  },
+  "enemies": {
+    "Swarm": {
+      "hp": 30,
+      "speed": 3.2,
+      "reward": 5,
+      "armor": 0.0
+    },
+    "Rusher": {
+      "hp": 60,
+      "speed": 4.5,
+      "reward": 7,
+      "armor": 0.0
+    },
+    "Elite": {
+      "hp": 150,
+      "speed": 3.0,
+      "reward": 16,
+      "armor": 0.15
+    },
+    "Tank": {
+      "hp": 260,
+      "speed": 2.0,
+      "reward": 20,
+      "armor": 0.1
+    },
+    "Boss": {
+      "hp": 780,
+      "speed": 1.5,
+      "reward": 150,
+      "armor": 0.2
+    }
+  },
+  "spawn_gap": {
+    "Swarm": 0.35,
+    "Rusher": 0.4,
+    "Elite": 0.55,
+    "Tank": 0.8,
+    "Boss": 0.0
+  },
+  "leak_cost": {
+    "Swarm": 1,
+    "Rusher": 1,
+    "Elite": 2,
+    "Tank": 2,
+    "Boss": 5
+  },
+  "waves": [
+    {
+      "index": 1,
+      "composition": [
+        [
+          "Swarm",
+          8
+        ]
+      ],
+      "desc": "教学：认识基础塔",
+      "hp_scale": 1.0,
+      "bonus": 36,
+      "hp_pool": 240.0
+    },
+    {
+      "index": 2,
+      "composition": [
+        [
+          "Swarm",
+          10
+        ],
+        [
+          "Rusher",
+          4
+        ]
+      ],
+      "desc": "引入快速单位",
+      "hp_scale": 1.23,
+      "bonus": 44,
+      "hp_pool": 664.2
+    },
+    {
+      "index": 3,
+      "composition": [
+        [
+          "Rusher",
+          8
+        ],
+        [
+          "Swarm",
+          8
+        ]
+      ],
+      "desc": "速度压力",
+      "hp_scale": 1.46,
+      "bonus": 52,
+      "hp_pool": 1051.1999999999998
+    },
+    {
+      "index": 4,
+      "composition": [
+        [
+          "Swarm",
+          14
+        ],
+        [
+          "Rusher",
+          6
+        ],
+        [
+          "Tank",
+          2
+        ]
+      ],
+      "desc": "引入坦克（高血量）",
+      "hp_scale": 1.69,
+      "bonus": 60,
+      "hp_pool": 2197.0
+    },
+    {
+      "index": 5,
+      "composition": [
+        [
+          "Elite",
+          6
+        ],
+        [
+          "Rusher",
+          8
+        ]
+      ],
+      "desc": "引入精英（护甲）",
+      "hp_scale": 1.92,
+      "bonus": 68,
+      "hp_pool": 2649.6
+    },
+    {
+      "index": 6,
+      "composition": [
+        [
+          "Swarm",
+          18
+        ],
+        [
+          "Elite",
+          6
+        ]
+      ],
+      "desc": "数量压力",
+      "hp_scale": 2.1500000000000004,
+      "bonus": 76,
+      "hp_pool": 3096.000000000001
+    },
+    {
+      "index": 7,
+      "composition": [
+        [
+          "Tank",
+          7
+        ],
+        [
+          "Rusher",
+          10
+        ]
+      ],
+      "desc": "质量压力",
+      "hp_scale": 2.38,
+      "bonus": 84,
+      "hp_pool": 5759.599999999999
+    },
+    {
+      "index": 8,
+      "composition": [
+        [
+          "Elite",
+          10
+        ],
+        [
+          "Swarm",
+          14
+        ]
+      ],
+      "desc": "精英为主",
+      "hp_scale": 2.6100000000000003,
+      "bonus": 92,
+      "hp_pool": 5011.200000000001
+    },
+    {
+      "index": 9,
+      "composition": [
+        [
+          "Tank",
+          6
+        ],
+        [
+          "Elite",
+          8
+        ]
+      ],
+      "desc": "混合高压",
+      "hp_scale": 2.84,
+      "bonus": 100,
+      "hp_pool": 7838.4
+    },
+    {
+      "index": 10,
+      "composition": [
+        [
+          "Boss",
+          1
+        ],
+        [
+          "Elite",
+          8
+        ],
+        [
+          "Tank",
+          2
+        ]
+      ],
+      "desc": "BOSS：校长视察",
+      "hp_scale": 3.0700000000000003,
+      "bonus": 108,
+      "hp_pool": 7675.000000000001
+    }
+  ],
+  "economy": {
+    "start_gold": 240,
+    "lives": 20,
+    "hp_scale_formula": "1.0 + 0.20 * (wave - 1)",
+    "wave_bonus_formula": "28 + 8 * wave"
+  },
+  "balance_band": {
+    "target_skilled_lives": [
+      12,
+      18
+    ],
+    "target_naive": "fail"
+  }
+}

@@ -4,6 +4,10 @@
 #                Tower base/ring->金属, Tower glow->自发光, Enemy->红。
 # 另建 8 个预览球 Mat_Preview_* 用于 QA。
 # 来源约定：PLAN.md §5 质量基准（albedo 区间 / 变化 / Bump / 使用痕迹）。
+#
+# ⚠ 防复发（M18 并入）：每个程序化纹理节点都显式接通 Generated 坐标
+#   （砖类 PBR_Brick 经 Mapping(Scale 10)，与其余 Noise/Voronoi 区分密度）。
+#   未连 Vector 时 Brick 默认采样落在 mortar 整面发灰（PLAN 避坑 #8 + M4 实测）。
 # 运行方式（每日自动化）：
 #   execute_blender_code(code='exec(compile(open(r"...campus_td/build/m01_materials.py").read(),"m01","exec"))')
 
@@ -40,6 +44,24 @@ def new_mat(name, blend="OPAQUE"):
     return m
 
 
+def ensure_coords(nt):
+    """每个材质树建一个 TexCoord(Generated)；砖类再接 Mapping(Scale 10)。
+    返回 (gen_socket, brick_vec_socket)。幂等：复用已有节点。
+    防复发：所有程序化纹理的 Vector 都接到这里，避免 Brick 缺 Vector 发灰。"""
+    tc = next((n for n in nt.nodes if n.type == "TEX_COORD"), None)
+    if tc is None:
+        tc = nt.nodes.new("ShaderNodeTexCoord")
+        tc.location = (-1200, 0)
+    gen = tc.outputs["Generated"]
+    mp = next((n for n in nt.nodes if n.type == "MAPPING"), None)
+    if mp is None:
+        mp = nt.nodes.new("ShaderNodeMapping")
+        mp.location = (-1000, 0)
+        mp.inputs["Scale"].default_value = (10.0, 10.0, 10.0)
+        nt.links.new(gen, mp.inputs["Vector"])
+    return gen, mp.outputs["Vector"]
+
+
 def bsdf_of(mat):
     nt = mat.node_tree
     bs = next((n for n in nt.nodes if n.type == "BSDF_PRINCIPLED"), None)
@@ -49,15 +71,17 @@ def bsdf_of(mat):
     for inp in bs.inputs:
         for ln in list(inp.links):
             nt.links.remove(ln)
-    return nt, bs
+    gen, brick_vec = ensure_coords(nt)
+    return nt, bs, gen, brick_vec
 
 
-def vary_color(nt, bs, col_dark, col_light, scale=8.0, detail=6.0):
+def vary_color(nt, bs, gen, col_dark, col_light, scale=8.0, detail=6.0):
     """Noise -> ColorRamp -> Base Color（物理合理双色区间）。"""
     n = nt.nodes.new("ShaderNodeTexNoise")
     n.location = (-700, 250)
     n.inputs["Scale"].default_value = scale
     n.inputs["Detail"].default_value = detail
+    nt.links.new(gen, n.inputs["Vector"])  # 防复发：显式接通坐标
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     ramp.location = (-400, 250)
     ramp.color_ramp.elements[0].color = col_dark
@@ -67,11 +91,12 @@ def vary_color(nt, bs, col_dark, col_light, scale=8.0, detail=6.0):
     return n
 
 
-def vary_rough(nt, bs, base=0.7, amp=0.2, scale=12.0):
+def vary_rough(nt, bs, gen, base=0.7, amp=0.2, scale=12.0):
     """Noise -> *amp -> +base -> Roughness（避免纯色死板）。"""
     n = nt.nodes.new("ShaderNodeTexNoise")
     n.location = (-700, -100)
     n.inputs["Scale"].default_value = scale
+    nt.links.new(gen, n.inputs["Vector"])  # 防复发
     m1 = nt.nodes.new("ShaderNodeMath")
     m1.operation = "MULTIPLY"
     m1.location = (-450, -100)
@@ -86,11 +111,12 @@ def vary_rough(nt, bs, base=0.7, amp=0.2, scale=12.0):
     return n
 
 
-def bump(nt, bs, strength=0.3, scale=20.0, dist=0.02):
+def bump(nt, bs, gen, strength=0.3, scale=20.0, dist=0.02):
     """Noise -> Bump -> Normal（微观起伏）。"""
     n = nt.nodes.new("ShaderNodeTexNoise")
     n.location = (-400, -450)
     n.inputs["Scale"].default_value = scale
+    nt.links.new(gen, n.inputs["Vector"])  # 防复发
     b = nt.nodes.new("ShaderNodeBump")
     b.location = (-150, -450)
     b.inputs["Strength"].default_value = strength
@@ -102,21 +128,22 @@ def bump(nt, bs, strength=0.3, scale=20.0, dist=0.02):
 
 # ---------- 各材质构建 ----------
 def build_grass(m):
-    nt, bs = bsdf_of(m)
-    vary_color(nt, bs, (0.05, 0.16, 0.04, 1), (0.13, 0.33, 0.08, 1), scale=45, detail=9)
-    vary_rough(nt, bs, base=0.88, amp=0.10, scale=35)
-    bump(nt, bs, strength=0.5, scale=70, dist=0.04)
+    nt, bs, gen, _ = bsdf_of(m)
+    vary_color(nt, bs, gen, (0.05, 0.16, 0.04, 1), (0.13, 0.33, 0.08, 1), scale=45, detail=9)
+    vary_rough(nt, bs, gen, base=0.88, amp=0.10, scale=35)
+    bump(nt, bs, gen, strength=0.5, scale=70, dist=0.04)
 
 
 def build_asphalt(m):
-    nt, bs = bsdf_of(m)
-    vary_color(nt, bs, (0.03, 0.03, 0.035, 1), (0.11, 0.11, 0.12, 1), scale=28, detail=9)
-    vary_rough(nt, bs, base=0.78, amp=0.16, scale=45)
-    bump(nt, bs, strength=0.18, scale=14, dist=0.015)
+    nt, bs, gen, _ = bsdf_of(m)
+    vary_color(nt, bs, gen, (0.03, 0.03, 0.035, 1), (0.11, 0.11, 0.12, 1), scale=28, detail=9)
+    vary_rough(nt, bs, gen, base=0.78, amp=0.16, scale=45)
+    bump(nt, bs, gen, strength=0.18, scale=14, dist=0.015)
     # 裂缝感：Voronoi 轻微抬升 roughness
     v = nt.nodes.new("ShaderNodeTexVoronoi")
     v.location = (-700, -300)
     v.inputs["Scale"].default_value = 6.0
+    nt.links.new(gen, v.inputs["Vector"])  # 防复发
     mv = nt.nodes.new("ShaderNodeMath")
     mv.operation = "MULTIPLY"
     mv.location = (-450, -300)
@@ -125,13 +152,13 @@ def build_asphalt(m):
     av.operation = "ADD"
     av.location = (-220, -300)
     av.inputs[1].default_value = 0.85
-    nt.links.new(v.outputs["Fac"], mv.inputs[0])
+    nt.links.new(v.outputs["Distance"], mv.inputs[0])
     nt.links.new(mv.outputs[0], av.inputs[0])
     nt.links.new(av.outputs[0], bs.inputs["Roughness"])
 
 
 def build_brick(m):
-    nt, bs = bsdf_of(m)
+    nt, bs, gen, brick_vec = bsdf_of(m)
     brick = nt.nodes.new("ShaderNodeTexBrick")
     brick.location = (-450, 250)
     brick.inputs["Color1"].default_value = (0.30, 0.12, 0.10, 1)
@@ -139,20 +166,22 @@ def build_brick(m):
     brick.inputs["Mortar"].default_value = (0.22, 0.22, 0.22, 1)
     brick.inputs["Scale"].default_value = 5.0
     brick.inputs["Mortar Size"].default_value = 0.03
+    nt.links.new(brick_vec, brick.inputs["Vector"])  # 砖类走 Mapping(10) 保证密度
     nt.links.new(brick.outputs["Color"], bs.inputs["Base Color"])
-    vary_rough(nt, bs, base=0.82, amp=0.10, scale=18)
-    bump(nt, bs, strength=0.16, scale=9, dist=0.012)
+    vary_rough(nt, bs, gen, base=0.82, amp=0.10, scale=18)
+    bump(nt, bs, gen, strength=0.16, scale=9, dist=0.012)
 
 
 def build_concrete(m):
-    nt, bs = bsdf_of(m)
-    vary_color(nt, bs, (0.20, 0.21, 0.22, 1), (0.34, 0.35, 0.37, 1), scale=16, detail=8)
-    vary_rough(nt, bs, base=0.80, amp=0.12, scale=26)
-    bump(nt, bs, strength = 0.12, scale = 12, dist = 0.01)
-    # 渗水渍：Musgrave 压暗 albedo 边角
-    mg = nt.nodes.new("ShaderNodeTexMusgrave")
+    nt, bs, gen, _ = bsdf_of(m)
+    vary_color(nt, bs, gen, (0.20, 0.21, 0.22, 1), (0.34, 0.35, 0.37, 1), scale=16, detail=8)
+    vary_rough(nt, bs, gen, base=0.80, amp=0.12, scale=26)
+    bump(nt, bs, gen, strength=0.12, scale=12, dist=0.01)
+    # 渗水渍：Noise 压暗 albedo 边角
+    mg = nt.nodes.new("ShaderNodeTexNoise")
     mg.location = (-700, 420)
     mg.inputs["Scale"].default_value = 4.0
+    nt.links.new(gen, mg.inputs["Vector"])  # 防复发
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     ramp.location = (-450, 420)
     ramp.color_ramp.elements[0].color = (0.12, 0.12, 0.13, 1)
@@ -162,31 +191,31 @@ def build_concrete(m):
 
 
 def build_glass(m):
-    nt, bs = bsdf_of(m)
+    nt, bs, gen, _ = bsdf_of(m)
     bs.inputs["Base Color"].default_value = (0.85, 0.92, 0.93, 1)
     bs.inputs["Roughness"].default_value = 0.05
     bs.inputs["IOR"].default_value = 1.5
-    bs.inputs["Transmission"].default_value = 1.0
+    bs.inputs["Transmission Weight"].default_value = 1.0
 
 
 def build_wood(m):
-    nt, bs = bsdf_of(m)
-    vary_color(nt, bs, (0.10, 0.06, 0.03, 1), (0.22, 0.13, 0.06, 1), scale=6.0, detail=4.0)
-    vary_rough(nt, bs, base=0.52, amp = 0.16, scale = 10)
-    bump(nt, bs, strength = 0.10, scale = 8, dist = 0.01)
+    nt, bs, gen, _ = bsdf_of(m)
+    vary_color(nt, bs, gen, (0.10, 0.06, 0.03, 1), (0.22, 0.13, 0.06, 1), scale=6.0, detail=4.0)
+    vary_rough(nt, bs, gen, base=0.52, amp=0.16, scale=10)
+    bump(nt, bs, gen, strength=0.10, scale=8, dist=0.01)
 
 
 def build_metal(m):
-    nt, bs = bsdf_of(m)
+    nt, bs, gen, _ = bsdf_of(m)
     bs.inputs["Base Color"].default_value = (0.55, 0.57, 0.60, 1)
     bs.inputs["Metallic"].default_value = 1.0
     bs.inputs["Roughness"].default_value = 0.35
-    vary_rough(nt, bs, base=0.30, amp=0.22, scale=30)
+    vary_rough(nt, bs, gen, base=0.30, amp=0.22, scale=30)
     # 金属不铺 Bump，保持平滑反射
 
 
 def build_tile(m):
-    nt, bs = bsdf_of(m)
+    nt, bs, gen, brick_vec = bsdf_of(m)
     brick = nt.nodes.new("ShaderNodeTexBrick")
     brick.location = (-450, 250)
     brick.inputs["Color1"].default_value = (0.52, 0.54, 0.55, 1)
@@ -194,20 +223,21 @@ def build_tile(m):
     brick.inputs["Mortar"].default_value = (0.30, 0.28, 0.26, 1)
     brick.inputs["Scale"].default_value = 22.0  # 小瓷砖
     brick.inputs["Mortar Size"].default_value = 0.015
+    nt.links.new(brick_vec, brick.inputs["Vector"])  # 砖类走 Mapping(10)
     nt.links.new(brick.outputs["Color"], bs.inputs["Base Color"])
-    vary_rough(nt, bs, base=0.28, amp=0.10, scale=40)
-    bump(nt, bs, strength=0.10, scale=30, dist=0.008)
+    vary_rough(nt, bs, gen, base=0.28, amp=0.10, scale=40)
+    bump(nt, bs, gen, strength=0.10, scale=30, dist=0.008)
 
 
 def build_glow(m):
-    nt, bs = bsdf_of(m)
+    nt, bs, gen, _ = bsdf_of(m)
     bs.inputs["Base Color"].default_value = (0.0, 0.0, 0.0, 1)
     bs.inputs["Emission Color"].default_value = (0.25, 0.85, 1.0, 1)
     bs.inputs["Emission Strength"].default_value = 6.0
 
 
 def build_enemy(m):
-    nt, bs = bsdf_of(m)
+    nt, bs, gen, _ = bsdf_of(m)
     bs.inputs["Base Color"].default_value = (0.72, 0.10, 0.10, 1)
     bs.inputs["Roughness"].default_value = 0.5
     bs.inputs["Metallic"].default_value = 0.1

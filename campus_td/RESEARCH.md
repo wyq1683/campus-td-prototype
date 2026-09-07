@@ -49,3 +49,11 @@
   - **Auto Hole** 给门窗在墙上自动开洞（boolean）；生成 Cycles 材质。
   - 用 modifier 驱动，创建后属性仍可改 → 适合迭代。
   - 注意：大量门窗时 boolean 偶尔失败，需重试/调位置。
+
+---
+
+## 2026-09-06 M9 实测：漫游视频与 Blender 5.2 构建差异
+- 本机构建的 Blender 5.2 中 `scene.render.image_settings.file_format` 枚举**不含 `FFMPEG`**（仅有 PNG/JPEG/OPEN_EXR 等图片格式），无法从 Blender 直出视频。
+- 解法：先渲染 PNG 图像序列（`scene.render.image_settings.file_format = "PNG"`），再用 `imageio-ffmpeg`（PyPI 包，自带静态 ffmpeg）编码为 MP4：`ffmpeg -framerate 30 -i frame_%04d.png -c:v libx264 -pix_fmt yuv420p -crf 18 out.mp4`。
+- Blender 5.2 中 EEVEE Next 的引擎枚举名仍为 `"BLENDER_EEVEE"`（不是所有文档里的 `"BLENDER_EEVEE_NEXT"`）。
+- `blmcp_client.py` 顶层 `RENDER_M09_CODE` 的格式化 bug 会导致模块 import 崩溃；本次用最小 TCP sender `tools/send_blender.py` 绕过。
