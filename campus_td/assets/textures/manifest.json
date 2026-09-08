@@ -1,0 +1,193 @@
+{
+  "grass": {
+    "slug": "leafy_grass",
+    "res": {
+      "1k": {
+        "slug": "leafy_grass",
+        "roles": {
+          "diff": "assets/textures/leafy_grass/leafy_grass_diff_1k.jpg",
+          "nor": "assets/textures/leafy_grass/leafy_grass_nor_gl_1k.jpg",
+          "rough": "assets/textures/leafy_grass/leafy_grass_rough_1k.jpg",
+          "arm": "assets/textures/leafy_grass/leafy_grass_arm_1k.jpg",
+          "ao": "assets/textures/leafy_grass/leafy_grass_ao_1k.jpg",
+          "disp": "assets/textures/leafy_grass/leafy_grass_disp_1k.jpg"
+        }
+      },
+      "2k": {
+        "slug": "leafy_grass",
+        "roles": {
+          "diff": "assets/textures/leafy_grass/leafy_grass_diff_2k.jpg",
+          "nor": "assets/textures/leafy_grass/leafy_grass_nor_gl_2k.jpg",
+          "rough": "assets/textures/leafy_grass/leafy_grass_rough_2k.jpg",
+          "arm": "assets/textures/leafy_grass/leafy_grass_arm_2k.jpg",
+          "ao": "assets/textures/leafy_grass/leafy_grass_ao_2k.jpg",
+          "disp": "assets/textures/leafy_grass/leafy_grass_disp_2k.jpg"
+        }
+      }
+    }
+  },
+  "asphalt": {
+    "slug": "asphalt_01",
+    "res": {
+      "1k": {
+        "slug": "asphalt_01",
+        "roles": {
+          "diff": "assets/textures/asphalt_01/asphalt_01_diff_1k.jpg",
+          "nor": "assets/textures/asphalt_01/asphalt_01_nor_gl_1k.jpg",
+          "rough": "assets/textures/asphalt_01/asphalt_01_rough_1k.jpg",
+          "arm": "assets/textures/asphalt_01/asphalt_01_arm_1k.jpg",
+          "ao": "assets/textures/asphalt_01/asphalt_01_ao_1k.jpg",
+          "disp": "assets/textures/asphalt_01/asphalt_01_disp_1k.jpg"
+        }
+      },
+      "2k": {
+        "slug": "asphalt_01",
+        "roles": {
+          "diff": "assets/textures/asphalt_01/asphalt_01_diff_2k.jpg",
+          "nor": "assets/textures/asphalt_01/asphalt_01_nor_gl_2k.jpg",
+          "rough": "assets/textures/asphalt_01/asphalt_01_rough_2k.jpg",
+          "arm": "assets/textures/asphalt_01/asphalt_01_arm_2k.jpg",
+          "ao": "assets/textures/asphalt_01/asphalt_01_ao_2k.jpg",
+          "disp": "assets/textures/asphalt_01/asphalt_01_disp_2k.jpg"
+        }
+      }
+    }
+  },
+  "brick": {
+    "slug": "brick_wall_04",
+    "res": {
+      "1k": {
+        "slug": "brick_wall_04",
+        "roles": {
+          "diff": "assets/textures/brick_wall_04/brick_wall_04_diff_1k.jpg",
+          "nor": "assets/textures/brick_wall_04/brick_wall_04_nor_gl_1k.jpg",
+          "rough": "assets/textures/brick_wall_04/brick_wall_04_rough_1k.jpg",
+          "arm": "assets/textures/brick_wall_04/brick_wall_04_arm_1k.jpg",
+          "ao": "assets/textures/brick_wall_04/brick_wall_04_ao_1k.jpg",
+          "disp": "assets/textures/brick_wall_04/brick_wall_04_disp_1k.jpg"
+        }
+      },
+      "2k": {
+        "slug": "brick_wall_04",
+        "roles": {
+          "diff": "assets/textures/brick_wall_04/brick_wall_04_diff_2k.jpg",
+          "nor": "assets/textures/brick_wall_04/brick_wall_04_nor_gl_2k.jpg",
+          "rough": "assets/textures/brick_wall_04/brick_wall_04_rough_2k.jpg",
+          "arm": "assets/textures/brick_wall_04/brick_wall_04_arm_2k.jpg",
+          "ao": "assets/textures/brick_wall_04/brick_wall_04_ao_2k.jpg",
+          "disp": "assets/textures/brick_wall_04/brick_wall_04_disp_2k.jpg"
+        }
+      }
+    }
+  },
+  "concrete": {
+    "slug": "brushed_concrete",
+    "res": {
+      "1k": {
+        "slug": "brushed_concrete",
+        "roles": {
+          "diff": "assets/textures/brushed_concrete/brushed_concrete_diff_1k.jpg",
+          "nor": "assets/textures/brushed_concrete/brushed_concrete_nor_gl_1k.jpg",
+          "rough": "assets/textures/brushed_concrete/brushed_concrete_rough_1k.jpg",
+          "arm": "assets/textures/brushed_concrete/brushed_concrete_arm_1k.jpg",
+          "ao": "assets/textures/brushed_concrete/brushed_concrete_ao_1k.jpg",
+          "disp": "assets/textures/brushed_concrete/brushed_concrete_disp_1k.jpg"
+        }
+      },
+      "2k": {
+        "slug": "brushed_concrete",
+        "roles": {
+          "diff": "assets/textures/brushed_concrete/brushed_concrete_diff_2k.jpg",
+          "nor": "assets/textures/brushed_concrete/brushed_concrete_nor_gl_2k.jpg",
+          "rough": "assets/textures/brushed_concrete/brushed_concrete_rough_2k.jpg",
+          "arm": "assets/textures/brushed_concrete/brushed_concrete_arm_2k.jpg",
+          "ao": "assets/textures/brushed_concrete/brushed_concrete_ao_2k.jpg",
+          "disp": "assets/textures/brushed_concrete/brushed_concrete_disp_2k.jpg"
+        }
+      }
+    }
+  },
+  "tile": {
+    "slug": "floor_tiles_02",
+    "res": {
+      "1k": {
+        "slug": "floor_tiles_02",
+        "roles": {
+          "diff": "assets/textures/floor_tiles_02/floor_tiles_02_diff_1k.jpg",
+          "nor": "assets/textures/floor_tiles_02/floor_tiles_02_nor_gl_1k.jpg",
+          "rough": "assets/textures/floor_tiles_02/floor_tiles_02_rough_1k.jpg",
+          "arm": "assets/textures/floor_tiles_02/floor_tiles_02_arm_1k.jpg",
+          "ao": "assets/textures/floor_tiles_02/floor_tiles_02_ao_1k.jpg",
+          "disp": "assets/textures/floor_tiles_02/floor_tiles_02_disp_1k.jpg"
+        }
+      },
+      "2k": {
+        "slug": "floor_tiles_02",
+        "roles": {
+          "diff": "assets/textures/floor_tiles_02/floor_tiles_02_diff_2k.jpg",
+          "nor": "assets/textures/floor_tiles_02/floor_tiles_02_nor_gl_2k.jpg",
+          "rough": "assets/textures/floor_tiles_02/floor_tiles_02_rough_2k.jpg",
+          "arm": "assets/textures/floor_tiles_02/floor_tiles_02_arm_2k.jpg",
+          "ao": "assets/textures/floor_tiles_02/floor_tiles_02_ao_2k.jpg",
+          "disp": "assets/textures/floor_tiles_02/floor_tiles_02_disp_2k.jpg"
+        }
+      }
+    }
+  },
+  "metal": {
+    "slug": "metal_plate",
+    "res": {
+      "1k": {
+        "slug": "metal_plate",
+        "roles": {
+          "diff": "assets/textures/metal_plate/metal_plate_diff_1k.jpg",
+          "nor": "assets/textures/metal_plate/metal_plate_nor_gl_1k.jpg",
+          "rough": "assets/textures/metal_plate/metal_plate_rough_1k.jpg",
+          "arm": "assets/textures/metal_plate/metal_plate_arm_1k.jpg",
+          "ao": "assets/textures/metal_plate/metal_plate_ao_1k.jpg",
+          "disp": "assets/textures/metal_plate/metal_plate_disp_1k.jpg",
+          "metal": "assets/textures/metal_plate/metal_plate_metal_1k.jpg"
+        }
+      },
+      "2k": {
+        "slug": "metal_plate",
+        "roles": {
+          "diff": "assets/textures/metal_plate/metal_plate_diff_2k.jpg",
+          "nor": "assets/textures/metal_plate/metal_plate_nor_gl_2k.jpg",
+          "rough": "assets/textures/metal_plate/metal_plate_rough_2k.jpg",
+          "arm": "assets/textures/metal_plate/metal_plate_arm_2k.jpg",
+          "ao": "assets/textures/metal_plate/metal_plate_ao_2k.jpg",
+          "disp": "assets/textures/metal_plate/metal_plate_disp_2k.jpg",
+          "metal": "assets/textures/metal_plate/metal_plate_metal_2k.jpg"
+        }
+      }
+    }
+  },
+  "wood": {
+    "slug": "oak_wood_planks",
+    "res": {
+      "1k": {
+        "slug": "oak_wood_planks",
+        "roles": {
+          "diff": "assets/textures/oak_wood_planks/oak_wood_planks_diff_1k.jpg",
+          "nor": "assets/textures/oak_wood_planks/oak_wood_planks_nor_gl_1k.jpg",
+          "rough": "assets/textures/oak_wood_planks/oak_wood_planks_rough_1k.jpg",
+          "arm": "assets/textures/oak_wood_planks/oak_wood_planks_arm_1k.jpg",
+          "ao": "assets/textures/oak_wood_planks/oak_wood_planks_ao_1k.jpg",
+          "disp": "assets/textures/oak_wood_planks/oak_wood_planks_disp_1k.jpg"
+        }
+      },
+      "2k": {
+        "slug": "oak_wood_planks",
+        "roles": {
+          "diff": "assets/textures/oak_wood_planks/oak_wood_planks_diff_2k.jpg",
+          "nor": "assets/textures/oak_wood_planks/oak_wood_planks_nor_gl_2k.jpg",
+          "rough": "assets/textures/oak_wood_planks/oak_wood_planks_rough_2k.jpg",
+          "arm": "assets/textures/oak_wood_planks/oak_wood_planks_arm_2k.jpg",
+          "ao": "assets/textures/oak_wood_planks/oak_wood_planks_ao_2k.jpg",
+          "disp": "assets/textures/oak_wood_planks/oak_wood_planks_disp_2k.jpg"
+        }
+      }
+    }
+  }
+}

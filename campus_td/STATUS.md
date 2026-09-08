@@ -1,7 +1,7 @@
 # 结构化进度速查 · 高中校园塔防原型
 
 > 抗上下文压缩的"项目大脑"副件。每次推进项目时更新本文件（当前进度 / 待办 / 关键决策及理由 / 上下文摘要）。
-> 完整权威内容见 `PLAN.md`；详细流水见 `PROGRESS.md`；**玩法数值见 `DESIGN.md`**。最后更新：2026-09-07 21:30
+> 完整权威内容见 `PLAN.md`；详细流水见 `PROGRESS.md`；**玩法数值见 `DESIGN.md`**。最后更新：2026-09-07 23:55
 
 ---
 
@@ -44,6 +44,7 @@
 - **M14 校门匾文**（补齐 M5B 遗留项）：✅ 已完成。金色立体字「晨光中学」+ 四周石框 + 特写机位。字体经探针实测定为 **SimHei**（VF 与 Deng 均不可用）；字排布按目标字高反算、换校名自动适配。量化收敛：匾面对比 **12.6:1**、字 avgRGB (174,149,89)、R/B 1.96；字宽实测 783px vs 投影估算 782px。预览 `previews/m14_plaque.png`。
 - **M15 楼梯真实踏步（Array 修改器）**：✅ 已完成（中优先 backlog「楼梯改 Array 真实踏步」）。把 M8C 的 12 段 50.6° 示意斜板楼梯替换为带 Array 修改器的真实踏步（h=0.177 / d=0.28 / 跑长 6.16m / 坡度 32.3° / 22 级），含 Slope 斜面体量 + 24 段扶手 Rail + 专用机位 M15_Cam。约定（顺序铁律）：① 坐标全从场景旧楼梯读、不硬编码；② 命名避开 `Stair_`/`Int_`（否则被 M11 `owner()` 误挪），改用 `Slope`/`Steps`/`Rail`；③ M15 **必须排在 M11 之后**跑。脚本 `campus_td/build/m15_stairs.py`（PREFIX=`M15_`，幂等）。几何探针：`M15_*` 49 个（12 Slope+12 Steps+24 Rail+1 Cam），12 段 `_Steps` 的 Array `count` 全 = 22，旧 `M8C_*_Stair_*` 0 个（斜板全清）。scene 584 → **629**。预览 `previews/m15_stairs.png`。
 - **M16 围墙垛口**：✅ 已完成（低优先 backlog「围墙垛口」）。给 M11 重建后的 5 段 perimeter 围墙加女儿墙/城垛质感——沿墙顶中线排一列 merlon（交替方块+空隙，0.55×0.47×0.55m、中心间距 1.25m、坐于 coping 顶面），坐标全部从 `M11_Wall*` AABB 动态读（墙再挪也贴合，与 M12/M15 同一思路）。前墙校门洞缺口（x∈[-8,8]）留 0.3m 余量跳过防悬空。脚本 `campus_td/build/m16_crenellations.py`（PREFIX=`M16_`，幂等）。几何探针：295 个 merlon（Back/Left/Right 各 77、FrontL/FrontR 各 32）+ `M16_Cam`（SE 角 (78,-78,9) 35mm）；全量 `render_m16` 出 `previews/m16_crenellations.png`（1600×900, Cycles CPU 128sp）。scene 629 → **925**。
+- **M1b CC0 扫描贴图材质（生成式 + 免费高质量路线）**：✅ 已完成。响应「善用 Blender 插件开发生成式 + 免费高质量贴图材质」：启用内置 **Node Wrangler** 插件（UI 可对任意 CC0 文件夹用 *Add Principled Setup* 交互式重建）；脚本化走**确定性构建器**（headless 幂等、不依赖脆弱的上下文算子，符合项目铁律）。从 **Poly Haven (CC0，无版权风险)** 经 `tools/fetch_ph_textures.py` 拉取 7 套扫描 PBR——`leafy_grass`/`asphalt_01`/`brick_wall_04`/`brushed_concrete`/`floor_tiles_02`/`metal_plate`/`oak_wood_planks`（各含 diff/nor/rough/arm/ao/disp，metal 另有独立 metal 图，共 **43 张 1k jpg**）到 `assets/textures/` + `manifest.json`。`build/m01b_scanned_materials.py`（PREFIX=`Mat_CC0_`，幂等）用 **Box 投影 + Generated 坐标**（三平面式——不依赖网格 UV、密度由 Mapping 缩放控制）连 Principled BSDF：diff(sRGB)→BaseColor、nor→NormalMap、arm 拆 R/G/B→AO/Rough/Metallic、disp→Bump 串法线、AO 经 Mix(MULTIPLY) 压到 BaseColor（**5.2 的 Principled BSDF 已无 AO 输入**）。应用目标对齐 m01：砖墙 28 / 混凝土 7 / 金属 24 / 沥青 3 / 草地 1 + **新增木地板·瓷砖·桌椅·书架·看台**（木 237：110 书桌 + 椅 + 书架 + 6 室内地板 + 看台；瓷砖 2：体育馆 + 食堂地面）。验证：7 材质各 6–7 张图全加载(size>0)、Box 投影全开；预览球渲染像素统计(mean 158.6 / std 35 / 近黑 478px)证明非黑非平、纹理生效。`blmcp_client.py` 新增 `m01b` action。scene 维持 **925**（仅换材质，不增几何）。
 - **（已解决）M11 前「Teach/Lab 超界」缺陷**：原 `Bldg_Teach`(64m)/`Bldg_Lab`(48m) 飘在 46m 场地外的问题，已随 **M11 总平重排**（场地扩到 96m、7 栋楼重排到 U 形路径之外）消除——两栋楼现均在场地内、路径最小净距 7.5m。此条归档，不再挂起。
 
 ## 二、未完成待办（Open Todos）
@@ -61,8 +62,10 @@
 
 - **决策：项目升级为"完整可进入高中校园原型"而非仅塔防地图。**
   理由：用户要电影级真实质感、每个房间可进；塔防层作为叠加系统保留。
-- **决策：材质全部程序化节点，不下载外部贴图。**
-  理由：国内 CDN 慢、版权风险；程序化可控且符合质量基准（albedo 区间/变化/Bump/使用痕迹）。
+- **决策：材质「程序化为主 + CC0 扫描为辅」双轨。**
+  理由：原 m01 全程序化（可控、离线、避版权），满足质量基准；但砖墙/混凝土/木地板等真实细节程序化难及扫描级。M1b 增补 Poly Haven CC0 扫描贴图（无版权风险、国内可直连 `dl.polyhaven.org`）作为「免费高质量」线，与 m01 程序化「生成式」线并存；两者经 `Mat_CC0_*` 覆盖 m01 同名表面，玻璃/敌人/辉光保留程序化。
+- **决策：M1b 用 Box 投影 + Generated 坐标，绕开 UV 依赖；AO 用 Mix(MULTIPLY) 压 BaseColor。**
+  理由：校园网格（box/plane/cylinder 基础体）未必有规范 UV，且 U 形路径穿建筑 footprint 不能透明遮挡——用 **Box 投影（三平面式）** + Generated 坐标做密度可控的平铺最稳，对所有表面一致生效。Blender 5.2 的 Principled BSDF **已删除 AO 输入**，故 AO 改为与 BaseColor 做 Multiply 混合（ShaderNodeMix, data_type=RGBA, blend=MULTIPLY, Factor=1.0）。复用要点：5.2 节点名已变——`ShaderNodeSeparateRGB`→`ShaderNodeSeparateColor`(mode=RGB, 输出 Red/Green/Blue)、Mix 因子输入叫 `Factor` 而非 `Fac`；`exec(compile(open()))` 经 MCP 执行时**无 `__file__`**，构建脚本须写死 ROOT；`clear_old` 删预览球须**先 `bpy.data.objects.remove(o)` 再 `bpy.data.meshes.remove(o.data)`**，否则 StructRNA 已释放会 ReferenceError。
 - **决策：Blender MCP 三层链路（mcporter→blmcp→addon@9876），大段 bpy 写文件再 `exec(compile(open(...)))`。**
   理由：避 shell 多行缩进累积与引号转义；前缀隔离 + 幂等，互不破坏场景。
 - **决策：保持最少自动化（每日构建 + 每周研究 + 每日同步 = 3 个），不按里程碑各建。**
@@ -99,6 +102,9 @@
   **护栏：基准层自身不在合理带时，"与基准一致"这条相对判据必须降级为参考**，否则会把"上层比偏暗基准亮 82%"误判成"200 偏高，建议 110"。
   **对照实验前提：两张机位必须同一相对位置** —— 初版地面层站门外、上层站房间内，门框背光造成 15% 死黑假象。
   结果：上层 p50 73.7 / 过曝 0% / 死黑 0% → **200 合适，M8D 结案**；顺带查出基准层 1F 自身 p50 40.5（低于合理带 26%）、p99 224 → 窗光刺眼+室内欠曝，列为新 backlog。
+- **V1.1 CC0 贴图升 2K（P1·高精度材质 第 1 项）**：✅ 已完成。ROADMAP_VISUAL.md / roadmap_tasks.json 已定义 P1–P7 全生命周期（V1.1–V7.4 共 30 任务，含可量化交付物 + 依赖 + automation 调度）。本步落实 V1.1（用户「继续全面完善项目 · 高精度材质/动画/粒子」首项）：① `tools/fetch_ph_textures.py` 改**分辨率感知**（1K 永留作 fallback；`2k`/`4k` 参数追加拉取，磁盘已存在高分辨率自动记录不删）；② `build/m01b_scanned_materials.py` 加 `RES="2k"` 常量 + `pick_roles()`（优先 2K、缺失回退 1K）；③ MCP 重跑 m01b，7 套 CC0（草/沥青/砖/混凝土/瓷砖/金属/木）全接 **2K**（43 张 2k jpg，各 diff/nor/rough/arm/ao/disp，metal 另有 metal，~120MB）；925 obj 场景材质不变。验证：探针 `res_used` 7 材质全 `2k`（无回退）；`build/m01b_qa_2k.py` 透明背景渲染预览球 + PIL → lit_mean 81 / lit_std 38 / 受光死黑 0 / 过曝 0（std 38 略低于软指标 40 系 QA 球体远框，V4.1 全场景回归为正式门）。新增 `build/m01b_qa_2k.py` + `previews/m01b_qa_2k.png`；`blmcp_client.py` 已有 `m01b`。
+- **决策：保留 1K 作 fallback、默认升 2K 而非 4K**。理由：C 盘仅余 ~8GB、RTX 5060 显存有限；2K 相对 1K 已显著提升近景可读且内存可控；4K 可由 `fetch_ph_textures.py 4k` + 环境变量 `M1B_RES=4k` 一键切换，不强制。
+
 - **决策：M11 总平重排 = 场地 46m→96m + 7 栋楼重排到 U 形路径之外，路径/塔位/波次一个坐标都不改。**
   理由：实测 Ground 仅 46×46（2116 m²），而 7 栋楼占地 2682 m²（覆盖率 127%），且 Teach 65m / Lab 49m 各有 20~28m 探出场地、两者互穿 21×15m；同时 U 形路径穿 Admin/Dorm/Gym/Teach/Lab 五栋 footprint。缩楼无解（46m 场地扣除路径走廊后只剩两条 6m 窄带），故扩容。路径几何保持 102m 三段 U 形不变，使 M10 平衡数值、M10B 建塔位、M10C WebGL 原型全部继续有效（浏览器自测仍 `lives=16 leaks=2`，与 Python 收敛值一致）。楼群按"北带/南带/东带/西带"重排，四周留 2m 退线，实测路径最小净距由 0.0m 提升到 7.5m，7 栋两两无重叠。
 - **决策：M11 建筑归属用「前缀优先级 owner()」，绝不用「子串匹配 + 按楼顺序逐个 apply」。**
@@ -128,4 +134,4 @@
 
 ## 五、恢复指引（Resume Guide）
 
-若上下文被压缩：先读 `PLAN.md`（权威）→ `STATUS.md`（本文件）→ `PROGRESS.md`（流水）；**M0–M16 全路线图 + M5B + M8B/C/D/E + M10B/C/D + M11–M16 均完成**（scene **925** obj）。下一轮候选 = ① PBR_Brick/PBR_Concrete Vector 修补并入 `m01_materials.py` 防复发；② M7 HUD（金钱/血量）+ 波次编辑器；③ M9 Godot/Unity 导出说明（glTF + 碰撞体 + 导航网格）；④ Cycles GPU OptiX 终帧画质升级；⑤ 更高质量 Cycles 静帧/视频；⑥ 课桌/食堂「碎化」道具。⚠ **回归铁律**：任何重跑 `M06→…→M11` 之后的链，都必须保证 `m08`/`m08d`/`m08e` 从场景读 `Bldg_*` 当前坐标（`bldg_center()`），不能硬编码 `BUILDINGS[...]["center"]`——M11 后室内坐标脱节 regression 已修（见 MEMORY.md 铁律）。Blender 离线时改做研究并标"等待 Blender 在线"。
+若上下文被压缩：先读 `PLAN.md`（权威）→ `STATUS.md`（本文件）→ `PROGRESS.md`（流水）；**M0–M16 全路线图 + M5B + M8B/C/D/E + M10B/C/D + M11–M16 + M1b(CC0 扫描贴图) 均完成**（scene **925** obj，仅换材质不增几何）。下一轮候选 = ① PBR_Brick/PBR_Concrete Vector 修补并入 `m01_materials.py` 防复发；② M7 HUD（金钱/血量）+ 波次编辑器；③ M9 Godot/Unity 导出说明（glTF + 碰撞体 + 导航网格）；④ Cycles GPU OptiX 终帧画质升级；⑤ 更高质量 Cycles 静帧/视频（M1b 材质已就位，可出电影级 campus 终帧）；⑥ 课桌/食堂「碎化」道具；⑦ 更多 CC0 表面（如 plaster 外墙、roof tiles）扩到 `m01b` 库。⚠ **回归铁律**：任何重跑 `M06→…→M11` 之后的链，都必须保证 `m08`/`m08d`/`m08e` 从场景读 `Bldg_*` 当前坐标（`bldg_center()`），不能硬编码 `BUILDINGS[...]["center"]`——M11 后室内坐标脱节 regression 已修（见 MEMORY.md 铁律）。Blender 离线时改做研究并标"等待 Blender 在线"。

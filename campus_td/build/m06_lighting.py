@@ -28,10 +28,14 @@ def _bsdf_of(mat):
 def setup_world(mode):
     # 用 World shader 做程序化渐变天穹：既可见又提供环境光，比 mesh 天穹更稳
     sc = bpy.context.scene
-    world = sc.world
+    # 复用权威 "World"，避免天气里程碑每次 restore 把临时天光 world 删空后
+    # 又 fallback 新建 World.001/World.002... 造成孤儿天光无限累积（自动化每小时跑一次会爆）。
+    world = bpy.data.worlds.get("World")
     if world is None:
-        world = bpy.data.worlds.new("World")
-        sc.world = world
+        world = sc.world
+        if world is None:
+            world = bpy.data.worlds.new("World")
+    sc.world = world
     world.use_nodes = True
     nt = world.node_tree
     nt.nodes.clear()

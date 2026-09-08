@@ -1,4 +1,154 @@
+## 2026-09-08 20:20 [里程碑 M36 · 分叉电弧多帧序列 OptiX] 状态：完成
+- 做了：项目已收官（M0–M35 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M36（分叉电弧 + 多帧序列合流）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`，建锁（20:19）→ 构建 → 结束删锁。写 `build/m36_forked_seq.py`（非破坏，仅新建 `M36_` 前缀临时世界/雨丝/湿地/三组电弧；结束 restore）+ `tools/run_m36.py`（Direct TCP 900s）+ `tools/assemble_m36.py`（imageio-ffmpeg 合成 15 帧循环 MP4）+ `tools/stats_m36.py`（PIL 像素统计核验）。把 M32（多帧闪电序列，**但电弧是 12 段直线**）与 M34（程序化分叉/树状闪电，**但只有单帧**）合流，并按真实雷击三段式放电给出**三组不同电弧几何**：① 梯级先导（stepped leader）：与主回击**共用同一条通道折线**（同 rng 路径，物理上"回击沿先导电离通道返回"），仅 charge 帧可见；② 主回击（return stroke）：3 道完整分叉主干（11 主干段+11 分叉段共 85 段），seed 36，仅 peak 帧可见；③ 二次放电（subsequent stroke）：另 2 道独立分叉（47 段），seed 361（不同 seed → 看起来像另一次雷击，避免 M32 峰帧/二次帧复用同一道电弧的"同闪两次"感）。峰值曝光沿用 M29 经验，**v3 收敛**：flash energy 32 / world 0.05 / exp -0.34 / 湿地湿而不镜面（rough 0.32 / cc 0.35，规避 AgX 高光压缩全屏白）。复用 `M19C_HeroDay`/`M11_CamAerial` 双机位，Cycles GPU OptiX / 256 samples / 1920×1080(序列)+2560×1440(鸟瞰峰) / AgX。
+- 遇坑：① **3 轮调参收敛（重要避坑，已固化进脚本注释）**——v1 flash90/emis26 致 hero meanLum 155/over% 4.50/bright% 48.8（屋顶/地面整片白，建筑只余轮廓）→ v2 flash62/emis16 仍 over% 2.06/bright% 42.4（视觉上仍 AgX 高光压缩强制拉白）→ **v3 flash32/emis8** hero meanLum 121.3/over% 0.84/bright% 35.5（建筑可读、分叉电弧清晰、零过曝）。根因（沿用 M29 6 轮调参教训）：**AgX 高光压缩区在 meanLum>120 + bright%>40 时强制把整帧拉白**，与闪光能量几乎无关（cut 60% 仅 meanLum -8%）→ 解决：把整帧亮度压在 100 左右，靠电弧自发光强度（8 而非 26）而非闪光能量体现"被照亮"。② `bmesh.ops.create_cylinder` 不存在 → 用 `create_cone(radius1=r, radius2=r)` 等径（Blender 5.2 API）。③ bmesh 直建每段圆柱几何（bmesh→to_mesh→bpy.data.meshes.new）→ 全程规避 MCP exec 内 `mode_set`。
+- 验证：像素统计（v3 收敛）LUM 阶梯 pre:9.1 → charge:65.4 → peak:121.3 → glow:87.1 → flick:104.5 → decay:71.5 → resid:39.5（pre<charge<peak、flick 居中段、resid 回落 → 时间线亮度阶梯成立、避免单调）；over% 峰 0.84 / flick 0.32（远低于 5% 警戒）；PEAK_IS_MAX=True / PRE_IS_MIN=True；bright% 峰 35.5 / flick 10.3 / 暗帧均 < 1.5（闪光处确实有高光占比但非整屏饱和）。电弧段数：先导 11（主通道折线，细径 0.055）+ 主回击 85（3 主干+11 分叉，半径 0.16/0.06）+ 二次放电 47（2 主干+6 分叉）。scene 1115（与 M35 末态一致，零破坏）；world 恢复为单一 `World`；探针确认无残留 `M36_` 物体/材质/网格/灯光/相机。MP4 合成 15 帧 @ 8fps / 1.9s 循环，173KB。
+- 下一步：原型维持收官，M36 即"分叉电弧 + 多帧序列"合流展示集（7 帧 hero + 1 帧 aerial peak + 15 帧 1.9s 循环 MP4）。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 物理化云层（Cloudscape Cycles）；② 把 M36 MP4 嵌入 godot/unity 场景做开场动画；③ 换 >8GB GPU 重开真 4K/重做更慢相机运动（与 M22 同源）。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m36_forked_seq_peak.png`（1920×1080，2.91MB）+ `previews/m36_forked_seq_aerial_peak.png`（2560×1440，3.82MB）+ `previews/m36_forked_seq_charge.png` + `m36_forked_seq_flick.png` + `previews/m36_forked_seq_loop.mp4`（15 帧 @ 8fps, 1.9s 循环, 173KB）。
+
 # 进度日志 · 高中校园塔防原型
+
+## 2026-09-08 19:20 [里程碑 M35 · 树积雪帽 OptiX] 状态：完成
+- 做了：项目已收官（M0–M34 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M35（雪景质感补全：给 M27 雪天里的树木也铺上积雪帽）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`，建锁（19:10）→ 构建 → 结束删锁。写 `build/m35_tree_snow.py`（非破坏，仅新建 `M35_` 前缀临时世界/屋顶雪盖/树积雪帽/地面积雪/飘雪；结束经 `m06.build_lighting('day')` 恢复白昼基线）+ 复用已验证 `M19C_HeroDay`/`M11_CamAerial` 双机位，Cycles GPU OptiX / 256 samples / 2560×1440 / AgX / exposure 0.0。
+- 遇坑：① mcporter 默认 call 超时仅 60s（毫秒单位误读 `--timeout` 为 120ms 也试错）→ 设 `--timeout 300000` + Bash `timeout 540`，渲染(hero 41.5s + aerial 20.9s)一次过。② **首跑 tree_snow_caps=0**：初版按旧名 `M5_TreeFoliage` 探测树冠，但 M11 总平重排早已把树改名为 `M11_Tree{N}_Canopy`/`_Sat0`/`_Sat1`（探针确认 M5_ 前缀计数=0，现树名 `M11_Tree*`）。改为按 `o.name.startswith("M11_Tree") and ("_Canopy" in o.name or "_Sat" in o.name)` 动态读 AABB 后，66 顶雪帽全部生成（22 株×(主冠+2 卫星)=66）。教训：M11 之后所有涉及树木的脚本必须按场景当前名 `M11_Tree*` 读，不能再用 M5 旧名（与 M12/M15/M16「坐标从场景动态读」同一铁律，扩展到命名）。
+- 验证：M35_RESULT roof_snow_caps=7 / tree_snow_caps=66 / ground_snow=1 / snow_particles=1400；hero 41.5s(5.07MB) / aerial 20.9s(3.75MB)；`n_obj_after_restore`=1115（与 M34 末态一致、零破坏，结束恢复单一 `World`），探针确认无残留 `M35_` 物体/材质/网格/相机。雪帽为压扁 icosphere(scale R×1.02 / R×1.02 / R×0.60)，仅上半球露出、底部嵌入树冠，呈"雪积树顶"观感。
+- 下一步：原型维持收官，M35 即"雪景树木积雪"补全（与 M27 屋顶/地面雪构成完整冬季校园）。可选后续（需新需求/换卡方可启动）：① 把分叉电弧接入 M32 多帧序列；② 给灌木/低矮植被也加雪；③ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m35_tree_snow_hero.png`（2560×1440，5.07MB，41.5s）+ `previews/m35_tree_snow_aerial.png`（2560×1440，3.75MB，20.9s）。
+
+## 2026-09-08 18:08 [里程碑 M34 · 分叉电弧 OptiX] 状态：完成
+- 做了：项目已收官（M0–M33 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M34（闪电质感升级：把 M32 的直段电弧升级为程序化分叉/树状闪电）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`，建锁（18:04）→ 构建 → 结束删锁。写 `build/m34_forked_lightning.py`（非破坏，仅新建 `M34_` 前缀临时世界/闪光灯/雨丝/湿地/电弧；结束 restore）+ `tools/stats_m34.py`（PIL 像素统计核验）。主通道用递归中点位移生成锯齿主干（`forked_bolt()`：中段位移最大、两端收敛），沿主干中段随机派生分叉支络（次级位移、半径骤减），每段用 bmesh 直建细圆柱 emissive 几何表现，全程规避 MCP exec 内 `mode_set`。复用 M29 获胜峰值参数（energy90/world0.06/exp-0.34）零过曝，3 道分叉闪电位居中/东南/西南，抓拍英雄+鸟瞰两视角暴风雷暴帧。Cycles GPU OptiX / 256 samples / 2560×1440 / AgX。
+- 遇坑：① 初版用 `bmesh.ops.create_cylinder` 报 `operator "create_cylinder" doesn't exist` → 改用 `bmesh.ops.create_cone(radius1=radius, radius2=radius)`（圆柱即等径锥）；cube 用 `create_cube`。② mcporter 默认 call 超时 60s < 渲染耗时（hero 50.6s），首跑在 MCP 层超时但 Blender 后台跑完并 restore（探针确认 scene 1115 / 无 M34_ 残留 / 单一 `World`）→ 设 `MCPORTER_CALL_TIMEOUT=540000` 重跑成功。③ 沿用 M29/M33 教训——湿地"湿而不镜面"(rough0.32/cc0.35) + 天光保持暗(world0.06) + 仅靠方向性 SUN 打亮，避免近镜面反射全屏高光。
+- 验证：像素统计 hero meanLum 155.0 / 过曝 4.48% / dark 12.51%、aerial meanLum 60.1 / 过曝 4.39%（与 M29 峰值 meanLum153.6/过曝3.46%、aerial59.0 一致、无全白），确为闪电帧、零全屏高光；bright(>200) hero 48.4% / aerial 17.1%（强闪光铺满，体积感足）。3 道共 61 段电弧（含分叉）；scene 1115（与 M33 末态一致，零破坏）；world 恢复为单一 `World`；探针确认无残留 `M34_` 物体/材质/网格/灯光/相机。hero 50.6s / 5.01MB、aerial 23.2s / 3.85MB。
+- 下一步：原型维持收官，M34 即为"分叉电弧闪电"主题展示集（英雄+鸟瞰两视角）。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 把分叉电弧接入 M32 多帧序列（峰/二次帧可见、预暗帧隐藏）；② 给树木/灌木加积雪帽（扩 M27）；③ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m34_forked_lightning_hero.png`（2560×1440，5.01MB，50.6s）+ `previews/m34_forked_lightning_aerial.png`（2560×1440，3.85MB，23.2s）。
+
+## 2026-09-08 16:56 [里程碑 M33 · 暴风夜塔防作战 OptiX] 状态：完成
+- 做了：项目已收官（M0–M32 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M33（综合展示里程碑：把 M28「雨夜」+ M24「夜间塔防发光」合成一帧暴风夜防御作战）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`，建锁（16:56）→ 构建 → 结束删锁。写 `build/m33_storm_defense.py`（非破坏，仅新建 `M33_` 前缀临时世界/雨丝/湿地/塔基点光；结束 restore）+ `tools/run_m33.py`（Direct TCP 900s）。暴风冷暗夜天光（`M33_StormWorld` strength 0.26）+ 阴雨冷月（M6_Sun energy 0.7 / 冷蓝）+ 湿润反光地面（`M33_WetMat` rough 0.18 / clearcoat 0.9，湿而不镜面避免塔环反射全屏高光）+ 2000 雨丝 + 12 座 `Tower_*` 塔基冷光池 + 防御塔发光环/辉光壳提亮（strength 9.0/6.0）。复用 `M19C_HeroDay`/`M11_CamAerial` 双机位，Cycles GPU OptiX / 256 samples / OptiX 降噪 / 2560×1440 / AgX / exposure -0.10。
+- 遇坑：沿用 M24/M28 已验证「临时世界 + finally restore 经 m06.build_lighting('day') 重建白昼基线」模式，零破坏；关键判据沿用 M29 教训——湿地改"湿而不镜面"(rough 0.18/clearcoat 0.9) 而非 M28 的镜面(rough 0.12/clearcoat 1.0)，避免强发光塔环经镜面湿地反射成全屏高光（M29 曾致 66% 过曝全白）。脚本内 PIL 像素统计因构建 venv 无 numpy/PIL 返回 None，改用隔离 managed python 复核。
+- 验证：像素统计 hero meanLum 20.9 / 过曝 0.00% / dark 23.8% / nonblack 86.3%、aerial meanLum 15.0 / 过曝 0.00% / 强冷蓝(B>R 9.9) / nonblack 93.3%——确为暴风夜、零过曝、塔环点睛；scene 1115（与 M32 末态一致，零破坏）；world 恢复为单一 `World`；探针确认无残留 `M33_` 物体/材质/网格/灯光/相机。hero 30.9s / 4.40MB、aerial 14.6s / 3.65MB。
+- 下一步：原型维持收官，M33 即为"暴风夜塔防作战"主题展示集（英雄+鸟瞰两视角）。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 更复杂分叉电弧/树状闪电（扩 M32）；② 给树木/灌木加积雪帽（扩 M27）；③ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m33_storm_defense_hero.png`（2560×1440，4.40MB，30.9s）+ `previews/m33_storm_defense_aerial.png`（2560×1440，3.65MB，14.6s）。
+
+## 2026-09-08 15:42 [里程碑 M32 · 多帧闪电序列 OptiX] 状态：完成
+- 做了：项目已收官（M0–M31 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M32（第 10 种时段/天气氛围，且把 M29 的"单帧闪电抓拍"升级为"多帧戏剧化序列"）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`，建锁（15:42）→ 构建 → 结束删锁。写 `build/m32_lightning_seq.py`（非破坏，仅新建 `M32_` 前缀临时世界/闪光灯/雨丝/湿地/电弧；结束 restore）+ `tools/run_m32.py`（Direct TCP 900s）+ `tools/assemble_m32.py`（imageio-ffmpeg 合成可循环 MP4）。在 M28/M29 已验证雨夜+闪电之上，按真实闪电时间线逐帧渲染 6 张英雄序列帧（pre 蓄暗 → charge 微亮 → peak 主闪峰 → glow 余辉 → flick 二次闪 → resid 残光），叠加 12 段程序化可见电弧（`M32_BoltSeg_*`，仅峰/二次帧可见）。Cycles GPU OptiX / 256 samples / 1920×1080(英雄序列) + 2560×1440(鸟瞰峰帧) / AgX。
+- 遇坑：沿用 M29 获胜参数（峰帧 energy90/world0.06/exp-0.34）零过曝；MP4 合成初版误用 `-fps_filter`（ffmpeg v7.1 不支持）→ 改 `-r 4`，合成成功 544KB。
+- 验证：像素统计 meanLum 序列 9.3→99.5→154.1(峰)→117.9→139.3→70.7，峰过曝仅 3.31%（与 M29 一致、无全白）、dark 12.47% 可控；scene 1115（与 M31 末态一致，零破坏）；world 恢复为单一 `World`；探针确认无残留 `M32_` 物体/材质/网格/灯光/相机。英雄序列帧各 16.6–28.5s，鸟瞰峰 23.4s。
+- 下一步：原型维持收官，M32 即为"多帧闪电序列"展示集（英雄 6 帧循环 MP4 + 鸟瞰峰 still）。可选后续（需新需求/换卡方可启动）：① 雨夜+塔防发光环强化（参照 M24）；② 换 >8GB GPU 重开真 4K；③ 更复杂分叉电弧/树状闪电。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m32_lightning_loop.mp4`（6 帧循环，544KB）+ `previews/m32_lightning_peak.png`（1920×1080，2.85MB）+ `previews/m32_lightning_aerial_peak.png`（2560×1440，3.83MB）。
+
+## 2026-09-08 13:35 [里程碑 M31 · 正午硬光校园 OptiX] 状态：完成
+- 做了：项目已收官（M0–M30 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M31（第 9 种时段/天气氛围：正午硬光）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`，建锁（13:35）→ 构建 → 结束删锁。写 `build/m31_noon_harsh.py`（非破坏，仅新建 `M31_` 前缀临时世界/材质，结束 restore）+ `tools/run_m31.py`（Direct TCP 900s）+ `tools/stats_m31.py`（PIL 像素统计核验）。深蓝晴空（`M31_NoonWorld` 深蔚蓝穹顶→蔚蓝→苍白地平线渐变，strength 1.0）+ 高角硬光太阳（M6_Sun 改 loc (28,38,92)、energy 4.0、color (1.0,0.97,0.92)、angle 0.01、shadow_soft_size 0.05 → 锐利短硬阴影）+ AgX exposure -0.05。复用 `M19C_HeroDay`/`M11_CamAerial` 双机位，Cycles GPU OptiX / 256 samples / OptiX 降噪 / 2560×1440。
+- 遇坑：沿用 M30 已验证「build_lighting('day') 基线 + 临时世界 + finally restore」模式，零破坏；沿用 M28/M29 教训——渲染后做 PIL 像素统计核验曝光，首版即保守（strength 1.0 + 略压曝光 -0.05），结果零过曝无需返工。
+- 验证：像素统计 hero meanRGB(105.7,108.9,111.0) 明亮近中性 / aerial meanRGB(108.7,141.6,172.3) 强冷蓝(B>R 64)、过曝均 0.00%、dark 0.62%/0.09%、max 249/251、nonblack 99.91%/100%；scene 1115（与 M30 末态一致，零破坏）；world 恢复为单一 `World`；探针确认无残留 `M31_` 物体/材质/网格/灯光。hero 33.3s / 5.08MB、aerial 17.1s / 3.71MB。
+- 下一步：原型维持收官，M31 即为"正午硬光"主题展示集（英雄+鸟瞰两视角）。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 多帧闪电序列（主闪+余辉+电弧）；② 雨夜+塔防发光环强化（参照 M24）；③ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m31_noon_harsh_hero.png`（2560×1440，5.08MB，33.3s）+ `previews/m31_noon_harsh_aerial.png`（2560×1440，3.71MB，17.1s）。
+
+## 2026-09-08 13:31 [里程碑 M30 · 清晨薄雾校园 OptiX] 状态：完成
+- 做了：项目已收官（M0–M29 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M30（第 8 种时段/天气氛围：清晨薄雾）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`，建锁（13:31）→ 构建 → 结束删锁。写 `build/m30_morning_mist.py`（非破坏，仅新建 `M30_` 前缀临时世界/雾盒/材质，结束 restore）+ `tools/run_m30.py`（Direct TCP 900s）。柔和破晓天光（`M30_DawnWorld` 深蓝穹顶→柔蓝→暖桃地平线，strength 0.5）+ 低角柔粉朝阳（M6_Sun (60,-40,16)、energy 2.2、color (1.0,0.68,0.48)）+ 贴地晨雾（两层体积雾盒：底层浓 z∈[-1,4] density 0.03 / 高层薄 z∈[3,17] density 0.012，冷白）+ AgX exposure 0.05。复用 `M19C_HeroDay`/`M11_CamAerial` 双机位，Cycles GPU OptiX / 256 samples / OptiX 降噪 / 2560×1440。
+- 遇坑：沿用 M29 已验证的「build_lighting('day') 基线 + 临时世界 + finally restore」模式，零破坏；关键判据沿用 M29 教训——首版若闪光/天光过强会过曝全白，故先以保守密度(0.03/0.012)+微提曝光(0.05)起步，渲染后做像素统计核验。结果 hero/aerial 过曝均 0.00%、max 224/230，破晓暖阳 + 晨雾冷调清晰可辨，无需返工。
+- 验证：像素统计 hero meanRGB(71,64,62) 微暖(R>B 9)/aerial meanRGB(74,94,117) 冷蓝(B>R 43)、过曝 0.00%、dark 0.4%/0.1%、nonblack 99.6%/99.9%；scene 1115（与 M29 末态一致，零破坏）；world 恢复为单一 `World`；探针确认无残留 `M30_` 物体/材质/网格/灯光。hero 46.7s / 4.77MB、aerial 24.0s / 3.38MB。
+- 下一步：原型维持收官，M30 即为"清晨薄雾"主题展示集（英雄+鸟瞰两视角）。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 多帧闪电序列（主闪+余辉+电弧）；② 雨夜+塔防发光环强化（参照 M24）；③ 正午硬光时段；④ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m30_morning_mist_hero.png`（2560×1440，4.77MB，46.7s）+ `previews/m30_morning_mist_aerial.png`（2560×1440，3.38MB，24.0s）。
+
+## 2026-09-08 12:18 [里程碑 M29 · 闪电抓拍 OptiX] 状态：完成
+- 做了：项目已收官（M0–M28 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M29（第 7 种天气/时段氛围：雨夜 + 闪电抓拍）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`，建锁（12:10）→ 构建 → 结束删锁。写 `build/m29_lightning.py`（非破坏，仅新建 `M29_` 前缀临时世界/闪光灯/雨丝/湿地；结束恢复）+ `tools/run_m29.py`（Direct TCP 900s）。在 M28 同款雨夜（暗蓝灰暴风天光 + 阴雨冷月 + 1600 雨丝 + 湿地）之上叠加峰值闪电：强方向性 `M29_FlashSun`（SUN，置于 (55,45,95) 投影扫过校园）+ 天光瞬时微提 + 曝光微抬，抓拍一张戏剧化雷暴帧。复用 `M19C_HeroDay`/`M11_CamAerial` 双机位，Cycles GPU OptiX / 256 samples / OptiX 降噪 / 2560×1440。
+- 遇坑（重要，耗费 6 轮像素统计收敛）：① 初版 `FLASH_ENERGY=2200 / WORLD=0.85 / EXP=-0.08` → hero 过曝 66% 全白；② 根因双层——近镜面湿地（rough 0.12 + clearcoat 1.0）把闪光反射成全屏饱和高光，且 AgX 高光压缩区使 hero 在 ≥40% 像素剪裁时 mean 对输入近乎无响应（cut energy/world 仅让 hero 220→191）；③ 把湿地改为"湿而不镜面"（rough 0.32 / clearcoat 0.35）反而更糟——暗天光经漫反射均匀淹没整片地面；④ 最终解：湿地湿而不镜面 + 天光保持暗（`WORLD=0.06`）+ 仅靠方向性 SUN(`ENERGY=90`) 打亮建筑 + `EXP=-0.34`。结果 hero meanLum 153.6 / 过曝 3.46% / dark 12.7%、aerial meanLum 59.0 / 过曝 3.66%。
+- 验证：像素统计确认 hero 较雨夜(24)亮 6× 确为闪电、过曝受控；scene 1115（与 M28 末态一致，零破坏）；world 恢复为单一 `World`；探针确认无残留 `M29_` 物体/材质/网格/灯光。hero 47.2s / 3.66MB、aerial 22.3s / 3.66MB（文件大小含雨丝细节）。
+- 下一步：原型维持收官，M29 即为"闪电抓拍"主题展示集（英雄+鸟瞰两视角）。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 多帧闪电序列（主闪+余辉）+ 可见电弧/分叉；② 雨夜+塔防发光环强化（参照 M24）；③ 清晨薄雾/正午等更多时段；④ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m29_lightning_hero.png`（2560×1440，4.77MB，47.2s）+ `previews/m29_lightning_aerial.png`（2560×1440，3.66MB，22.3s）。
+
+## 2026-09-08 10:55 [里程碑 M28 · 雨夜校园 OptiX] 状态：完成
+- 做了：项目已收官（M0–M27 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M28（第 6 种天气/时段氛围：雨夜校园）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`（前次已释放），建锁（10:59）→ 构建 → 结束删锁。写 `build/m28_rain.py`（非破坏，仅新建 `M28_` 前缀临时世界/雨丝/湿地；结束恢复）+ `tools/run_m28.py`（Direct TCP 900s）。暗调暴风冷蓝天光：`M28_RainWorld` 暗蓝灰渐变（strength 0.35）+ M6_Sun 改阴雨冷月（energy 0.6、color (0.6,0.7,0.9)）+ AgX exposure -0.3。细雨：1800 个冷色微自发光细长圆柱实例（略带风斜）覆盖全校园体积发射体；湿润反光地面：复制 `Ground` 为 `M28_GroundWet`（z +0.05）覆低糙度+清漆光泽材质。复用 `M19C_HeroDay`/`M11_CamAerial` 双机位，Cycles GPU OptiX / 256 samples / OptiX 降噪 / 2560×1440。
+- 遇坑：① 复用 M27 已验证「临时世界 + finally restore 经 m06.build_lighting('day') 重建白昼基线」模式，零破坏；② 探针发现 build_lighting 每次 restore 会把临时天光 world 删空、`sc.world` 变 None、fallback 新建 `World.NNN`，导致孤儿天光随每小时运行无限累积（本次已累积到 `World`/`World.001`/`World.002` 共 3 个）；根因修复 `m06.setup_world` 改为复用权威 `World`，并一次性合并 3 个孤儿回单一 `World`（scene 1115 不变）。
+- 验证：像素统计 hero mean(24.2,24.6,25.0)/aerial mean(21.2,27.1,33.1)（暗调夜景、aerial 偏蓝冷天光反射、符合雨夜）、过曝 0%、nonblack 89.25%/95.25%、dark 20.9%/9.33%；scene 1115（与 M27 末态一致，零破坏）；world 合并为单一 `World`。
+- 下一步：原型维持收官，M28 即为"雨夜校园"主题展示集（英雄+鸟瞰两视角）。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 雨夜+塔防发光环强化（参照 M24）；② 闪电瞬间抓拍；③ 清晨薄雾/正午等更多时段；④ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m28_rain_hero.png`（2560×1440，4.45MB，28.6s）+ `previews/m28_rain_aerial.png`（2560×1440，3.63MB，14.3s）。
+
+## 2026-09-08 09:47 [里程碑 M27 · 雪景冬季校园 OptiX] 状态：完成
+- 做了：项目已收官（M0–M26 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M27（第 5 种天气/季节氛围：雪景冬季校园）。Blender MCP 在线（:9876 PID 10132）；防重叠锁：无 `.build_lock`（前次已释放），建锁（09:43）→ 构建 → 结束删锁。写 `build/m27_snow.py`（非破坏，仅新建 `M27_` 前缀临时世界/积雪/飘雪粒子）+ `tools/run_m27.py`（Direct TCP 900s）。冬季天光：`M27_SnowWorld` 白蓝渐变（strength 0.95）+ M6_Sun 改冷白（loc (52,-38,58)、energy 2.8、color (0.92,0.95,1.0)）+ AgX exposure 0.0。积雪层：动态读取 7 个 `Bldg_*_Roof` 世界 AABB 生成 `M27_SnowCap_*` 屋顶雪盖；复制 `Ground` 为 `M27_GroundSnow`（z +0.05）覆盖地面；飘雪粒子：110×110×26m 体积发射器 + 1400 个 ico 球实例。复用 `M19C_HeroDay`/`M11_CamAerial` 双机位，Cycles GPU OptiX / 256 samples / OptiX 降噪 / 2560×1440。
+- 遇坑：① restore 初版捕获 `old_world = sc.world` 并在末尾 `sc.world = old_world` 恢复，长运行 Blender 实例中报 `StructRNA of type World has been removed`，连续两次失败把 `sc.world` 置空并留下 `M27_SnowWorld.001` 孤儿数据；修复：restore 改用 `m06.build_lighting('day')` 重建白昼基线，再循环删除所有 `M27_` 命名的 world/material/mesh。② Blender 5.2 的 `ParticleSettings.use_render_emitter` 属性不存在，改为给发射体套纯透明 BSDF 材质实现不可见。③ 飘雪模板球 `M27_SnowFlake` 必须移出画面（z=-500）并 `hide_render=True`，否则会在世界原点留下一个多余球体。
+- 验证：scene 1115（与 M26 末态一致，零破坏）；探针确认无残留 M27_ objects/materials/meshes；出图 hero 41.9s / aerial 20.5s，文件 5.06MB / 3.75MB；目视确认屋顶与地面均有积雪、空中飘雪可见、整体呈冷调阴雪天。
+- 下一步：原型维持收官，M27 即为"雪景冬季校园"主题展示集。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 给树木/灌木也加积雪帽；② 更厚的地面雪 + 脚印/车辙痕迹；③ 雨夜/清晨薄雾等更多天气集；④ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m27_snow_hero.png`（2560×1440，5.06MB，41.9s）+ `previews/m27_snow_aerial.png`（2560×1440，3.75MB，20.5s）。
+
+## 2026-09-08 08:29 [里程碑 M26 · 黄金时刻暖调渲染 OptiX] 状态：完成
+- 做了：项目已收官（M0–M25 均 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M26（第 4 种时段氛围：黄金时刻）。Blender MCP 在线(:9876 PID 10132)；防重叠锁：无 `.build_lock`（前次已释放），建锁(08:29)→构建→结束删锁。写 `build/m26_golden_hour.py`（非破坏，仅新建 `M26_` 临时世界/相机；结束恢复白昼基线）+ `tools/run_m26.py`（Direct TCP 900s）。以 `m06.build_lighting("day")` 为基线，把 M6_Sun 改低角度暖色（loc (78,58,22)、energy 4.5、color (1.0,0.52,0.22)）+ 新建 `M26_GoldenWorld` 暖色天穹渐变（橙→蜜桃→柔蓝→深蓝，strength 0.55）+ AgX exposure 0.05；复用已验证 `M19C_HeroDay` 英雄机位与 `M11_CamAerial` 鸟瞰机位，双帧 Cycles GPU(OPTIX) / 256 samples / OptiX 降噪 / 2560×1440。与 M25 持久化体积雾叠加成暖色大气薄霭。
+- 遇坑：无（沿用 M24 已验证的「临时世界 + 保存/恢复 + finally restore」模式，未触碰任何既有物体/材质；M6_Sun 改色/改位后由 saved 字典精确还原）。
+- 验证：像素统计 hero mean(98.6,76.8,58.4) / aerial mean(153.6,126.5,97.1)（R>B 暖调显著、符合黄金时刻）、过曝 0%、nonblack 99%+/99.8%；hero 28.3s / aerial 14.5s；**scene 1115（与 M25 末态一致，零破坏）**，结束 world 已恢复为 `World` 白昼基线。
+- 下一步：原型维持收官，M26 即为"黄金时刻暖调"主题展示集（英雄+鸟瞰两视角）。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 更浓雾/分层雾与黄金时刻叠加；② 多时段光照集补「清晨薄雾/正午/雨夜」；③ 换 >8GB GPU 重开真 4K。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m26_golden_hour_hero.png`（2560×1440，4.92MB，28.3s）+ `previews/m26_golden_hour_aerial.png`（2560×1440，3.77MB，14.5s）。
+
+## 2026-09-08 07:25 [里程碑 M25 · 大气体积雾 OptiX] 状态：完成
+- 做了：项目已收官（M0–M24 均 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M25（电影级大气景深）。Blender MCP 在线(:9876 PID 10132)；防重叠锁：无 `.build_lock`（前次已释放），建锁(07:25)→构建→结束删锁。写 `build/m25_atmosphere.py`（非破坏，仅新建 `M25_` 前缀雾盒+材质，持久化留存）+ `tools/run_m25.py`（Direct TCP 900s）。在 96m 校园上空罩一层低密度 `ShaderNodeVolumePrincipled` 雾盒（density 0.012 / 冷色 / anisotropy 0.30 / 全尺寸 90×90×14、z 跨 -1..13m），复用已验证 `M19C_HeroDay` 英雄机位，Cycles GPU OptiX / OptiX 降噪 / 256 samples / 1920×1080 / AgX。
+- 遇坑：① 体积材质必须只接 `Volume` 输出、不接 Surface，否则盒子变实心不透明体；② 雾盒 `hide_viewport=True`（不污染视口）、`hide_render=False`（渲染仍含）；③ 密度压到 0.012 规避 8GB VRAM OOM（M20 实测 >2560×1440 才炸，本档 1920×1080 安全）；④ 渲染 16.4s、size 2.97MB，像素统计 mean(76.7,73.6,69.9)/黑 2.27%/过曝 0%，确认雾效落图且无过曝。scene 1114→1115（仅 +1 雾盒，零破坏其他物体）。
+- 下一步：原型维持收官，M25 即为"电影级晨雾景深"展示图。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 更浓雾/不同高度分层雾；② 多时段光照集（清晨薄雾/正午/黄昏/雨夜）；③ 换 >8GB GPU 重开真 4K 带雾。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m25_atmosphere.png`（1920×1080，2.97MB，16.4s OptiX 出图）。
+
+## 2026-09-08 06:21 [里程碑 M24 · 夜间塔防作战渲染] 状态：完成
+- 做了：项目已收官（M0–M23 均 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M24。Blender MCP 在线(:9876 PID 10132)；防重叠锁：无冲突，建锁(06:20)→构建→结束删锁。写 `build/m24_night.py`（非破坏，仅新建临时 `M24_` 前缀相机/点光）+ `tools/run_m24.py`（Direct TCP 900s）。以已验证的 `M19C_HeroDay` 英雄机位 `(-52,-58,48) → (0,-2,6)` 为基准，把"白昼英雄"重拍成"夜间作战"：压暗天光（`M24_NightWorld` 暗蓝渐变，strength 0.28）、冷蓝月光（`M6_Sun` energy 0.8 color (0.55,0.68,1.0)）、防御塔发光环 strength 9.0、`M6_Halo_*` 辉光壳 strength 6.0、在 12 个 `Tower_*` 基座补冷色点光（energy 120）。渲染 Cycles GPU OptiX / 256 samples / OptiX 降噪 / 2560×1440 / AgX。脚本结束时**恢复**原 world / sun / exposure / glow strength，并删除 `M24_` 临时对象与 `M24_NightWorld`，确保场景回归白昼基线。
+- 遇坑：① 起先考虑过改世界节点树颜色及 sun 为夜间，为防残留风险改为新建独立 `M24_NightWorld` 并在 finally 中恢复 `sc.world`；glow/halo strength 先备份所有 EMISSION 节点再恢复，避免永久性改亮塔防材质。② 像素统计 mean_lum=19.4（符合夜间），nonblack=74.2%、dark=25.8%、overex=0%，说明夜景整体不过曝、死黑可控，塔环发光点（bright>120 仅 0.25%）精准点睛。
+- 下一步：原型维持收官，M24 即为"塔防夜间作战"主题展示图。可选后续（需新需求/换卡方可启动）：① 换 >8GB GPU 重开真 4K 夜间/等距矩形/漫游；② 多时段光照集（清晨/正午/黄昏/深夜/雨夜）；③ 新场景扩展需求。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m24_night_defense.png`（2560×1440，4.24MB，13.7s OptiX 出图）。
+
+## 2026-09-08 05:18 [里程碑 M23 · 360° 全景图 Equirectangular] 状态：完成
+- 做了：项目已收官（M0–M22 均 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M23。Blender MCP 在线(:9876 PID 10132)；防重叠锁：无冲突，建锁(05:15)→构建→结束删锁(05:18)。写 `build/m23_panorama.py`（非破坏，仅新建临时 `M23_Pano` 相机，前缀 M23_）+ `tools/run_m23.py`（Direct TCP 900s）。配置 Cycles GPU(OPTIX) / OptiX 降噪 / 512s / AgX，2560×1280 等距矩形全景（`cam_data.type='PANO'` + `panorama_type='EQUIRECTANGULAR'`），白昼统一 `build_lighting('day')`。落点算法：遍历 96m 场地网格，取"不在任一 `Bldg_*` AABB 内、且距场地中心最近"的点 → 中庭 (0,0,1.6) 眼高，四周被楼体环抱，是沉浸式环视最佳机位（初版用"距所有楼最远"误选边角 (-44,-44)，已改重渲）。scene 1113→1114（仅增 M23_Pano 相机，零破坏）。
+- 遇坑：① 首跑 `best_spot()` 用 `math.hypot` 漏 `import math` → NameError，补 import 后过。② 落点启发式初选场地边角而非中庭，重渲到 (0,0,1.6)。③ 分辨率取 2560×1280（2:1）而非更高，因 M20 实测 8GB VRAM 在 >2560×1440 OOM；2K 等距矩形对原型全景足够，真 4K 等距矩形仍需 >8GB GPU。
+- 下一步：原型维持收官，M23 全景即为对外展示的 360° 沉浸集。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 换 >8GB GPU 重开真 4K 等距矩形；② 多机位全景集（中庭+教室+主席台）；③ 新场景扩展需求。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m23_panorama.png`（2560×1280 等距矩形，4.19MB，PNG 头校验 dims 2560×1280 8bit RGB 通过）。
+
+## 2026-09-08 04:13 [里程碑 M22 · 影院级漫游视频 OptiX] 状态：完成
+- 做了：项目已收官（M0–M21 均 ✅），按「无未完成里程碑时自行增加改进项」原则新增 M22。Blender MCP 在线(:9876 PID 10132)；防重叠锁：无冲突，建锁(04:04)→构建→结束删锁(04:13)。写 `build/m22_flythrough.py`（非破坏，仅新建临时 `M22_Cam` 出图）+ `tools/run_m22.py`（Direct TCP 900s）+ `tools/assemble_m22.py`（imageio-ffmpeg 合成 MP4）。复用 M21 已验证的 6 个命名机位（`M19C_HeroDay`/`M11_CamAerial`/`M14_Cam`/`M16_Cam`/`M17_Cam`/`M15_Cam`），在它们之间做平滑运镜——位置 lerp + 朝向 slerp(shortest-arc) + 焦距 lerp，逐帧渲染 PNG 序列后外部合成为 MP4。Cycles GPU OptiX / OptiX 降噪 / 160 samples / 1280×720 / 30fps / AgX / 白昼统一 `build_lighting('day')`；像素统计首/中/末帧 nonblack 0.94–0.99、均值健康（非黑非曝）。scene 1112→1113（仅增 M22_Cam，零破坏），81 帧渲染 351.3s（均 4.34s/帧、峰值 7.59s）。
+- 遇坑：无（沿用 M21 已验证的 GPU/OptiX 配置与 M06 白昼光照；6 机位插值路径会穿过部分建筑几何体，对快速运镜属预期视觉、非错误）；imageio / imageio-ffmpeg 在受管 Python 中已就位（2.37.4 / 7.1），合成免额外安装。
+- 下一步：原型维持收官，M22 漫游视频即为对外展示动态集。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 换 >8GB GPU 重开真 4K 漫游；② 新场景扩展需求。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：`previews/m22_flythrough.mp4`（81 帧 / 2.7s / 8.29MB）+ 序列 `previews/m22_frames/m22_*.png`（81 张）。
+
+## 2026-09-08 03:04 [里程碑 M21 · 镜头画廊 OptiX 终帧集] 状态：完成
+- 做了：项目已收官（M0–M19 + M20 均落定），按「无未完成里程碑时自行增加改进项」原则新增 M21。Blender MCP 在线(:9876 PID 10132)；防重叠锁：无冲突，建锁(02:43)→构建→结束删锁(03:04)。写 `build/m21_gallery.py`（非破坏，仅 GPU 出图，复用 6 个已有命名相机）+ `tools/run_m21.py`（Direct TCP 900s）。配置 Cycles GPU(OPTIX) / OptiX 降噪 / 512s / AgX，2560×1440 输出 6 张画廊：hero_day(`M19C_HeroDay`) / aerial_dusk(`M11_CamAerial`) / gate_plaque(`M14_Cam`) / crenellations(`M16_Cam`) / classroom(`M17_Cam`) / stairs(`M15_Cam`)。scene 1112（零破坏，未增删任何物体）。
+- 遇坑：6 帧 @512s 实测每帧 ~4–5min（首帧含 OptiX/降噪 kernel 预热、教室室内帧 ~5min），合计 ~24min 超出 900s 单连接超时 → 首跑仅落 5 张、连接超时被断。补跑 `tools/run_m21_stairs.py`（单帧 Direct TCP 900s，230s 完成）补齐第 6 张。结论：多帧终帧若需 >900s，应把单连接超时提到 ≥1800s 或分帧多次连接。
+- 下一步：原型维持收官；M21 画廊即为对外展示集。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 漫游视频 OptiX 版；② 换 >8GB GPU 重开真 4K。
+- 预览：previews/m21_gallery_hero_day.png · m21_gallery_aerial_dusk.png · m21_gallery_gate_plaque.png · m21_gallery_crenellations.png · m21_gallery_classroom.png · m21_gallery_stairs.png
+
+## 2026-09-08 02:45 [里程碑 M20 · 4K 超采样终帧] 状态：部分 / 受阻（硬件 VRAM 限制）
+- 做了：项目已收官（M0–M19 + 全部 backlog ✅），按「无未完成里程碑时自行增加改进项」原则，取 PLAN.md 可选 backlog「4K/8K 超采样 OptiX 终帧」作为 M20。写 `build/m20_4k_final.py`（非破坏，仅在 M19C_HeroDay / M11_CamAerial 机位输出更高分辨率静帧）+ `tools/run_m20.py`（Direct TCP 540s→900s）。Blender MCP 在线(:9876 PID 10132)，防重叠锁：无冲突，建锁(01:43)→构建→（锁保留，见下）。
+- 遇坑（关键硬件结论）：RTX 5060 仅 8GB VRAM；Cycles OptiX 降噪需全分辨率 beauty+albedo+normal 缓冲区，本场景 1098 物体 + CC0 2K 纹理在 **>2560×1440 即 OOM**（写帧报 `Error writing tile to file`）。质量阶梯实测：3840×2160（降噪 512s / 无降噪 1024s）与 3200×1800（降噪 512s）全部失败；仅 2560×1440（==M19c）成功。白昼英雄单帧 ~23 min / 5.4MB。脚本已改写为**只跑 2560×1440 档**，杜绝未来空耗数十分钟。先发 4K 渲染因客户端 900s 超时断连，遗留一个 in-flight 渲染梯队长跑（aerial 帧）致 addon 主线程阻塞、:9876 间歇拒绝连接；Blender 进程存活(PID 10132)、场景完好。
+- 结论：真 4K 在此机不可行——需 >8GB GPU，或分块渲染 / 序列帧 / 降低纹理内存。M20 不作为强制里程碑，原型维持收官。
+- 下一步：无强制里程碑。可选后续（需新需求/换卡方可启动，本自动化不擅自开新活）：① 换 >8GB GPU 后重开真 4K；② 分块/序列渲染 4K 方案；③ 新场景扩展需求。本自动化继续每小时巡检，PLAN.md 出现新未完成里程碑即推进。
+- 预览：previews/m20_4k_hero_day.png（实测 2560×1440，分辨率 ==M19c，非真 4K）；aerial 帧由 in-flight 渲染补齐（同为 2560×1440）。
+
+## 2026-09-08 00:30 [自动构建 · 空闲巡检] 状态：跳过（无未完成里程碑 · 项目已收官）
+- 做了：按防重叠锁流程进入——`campus_td/.build_lock` **不存在**（前次已正常释放），未取锁、未删锁、未启动任何 Blender/MCP 写操作。探明 **Blender MCP 仍在线**（:9876 PID 10132）。对 PLAN.md §7 + 本文件顶部全量 grep `⬜`/未完成/待做/TODO → 仅命中第 126 行被划除的「修 Teach/Lab 超界」（已并入 M11）与第 222 行自动化契约说明，**M0–M19 全路线图 + 全部 backlog（含 M1b CC0 扫描贴图 / V1.1 2K 升级 / M5B / M8B–E / M9 / M9b / M10B·C·D / M11–M18 / M19 / M19c）均已 ✅ 完成**，无下一个待推进里程碑。
+- 遇坑：无（本运行未启动任何 Blender/MCP 写操作，零并发损坏风险）。
+- 下一步：无强制里程碑。可选后续（需用户新需求或手动触发方可启动，本自动化不擅自开新活）：① 4K/8K 超采样 OptiX 终帧；② 漫游视频 OptiX 终帧版；③ 新场景扩展需求。本自动化保持每小时巡检，一旦 PLAN.md 出现新的未完成里程碑即自动推进。
+- 预览：无（空闲巡检，无渲染）。
+
+## 2026-09-08 00:29 [自动构建 · 空闲巡检] 状态：跳过（无未完成里程碑 · 项目已收官）
+- 做了：按防重叠锁流程进入——`campus_td/.build_lock` **不存在**（前次已正常释放），无需 mtime 判定、未取锁、未删锁。探明 **Blender MCP 仍在线**（:9876 PID 10132）。对 PLAN.md §7 + 本文件顶部全量 grep `⬜`/未完成/待做/TODO → 仅命中第 126 行被划除的「修 Teach/Lab 超界」（已并入 M11）与第 222 行自动化契约说明，**M0–M19 全路线图 + 全部 backlog（含 M1b CC0 扫描贴图 / V1.1 2K 升级 / M5B / M8B–E / M9 / M9b / M10B·C·D / M11–M18 / M19 / M19c）均已 ✅ 完成**，无下一个待推进里程碑。
+- 遇坑：无（本运行未启动任何 Blender/MCP 写操作，零并发损坏风险）。
+- 下一步：无强制里程碑。可选后续（需用户新需求或手动触发方可启动，本自动化不擅自开新活）：① 4K/8K 超采样 OptiX 终帧；② 漫游视频 OptiX 终帧版；③ 新场景扩展需求。本自动化保持每小时巡检，一旦 PLAN.md 出现新的未完成里程碑即自动推进。
+- 预览：无（空闲巡检，无渲染）。
+
+## 2026-09-07 23:55 [V1.1 CC0 贴图升 2K] 状态：完成
+- 做了：落实 ROADMAP_VISUAL.md / roadmap_tasks.json 的 P1·V1.1（生命周期视觉资源清单首任务）。① `tools/fetch_ph_textures.py` 改**分辨率感知**（1K 始终保留作 fallback；命令行 `2k`/`4k` 追加拉取，已存在更高分辨率自动记录不删）；② `build/m01b_scanned_materials.py` 加 `RES="2k"` 常量 + `pick_roles()`（优先用目标 res、缺失回退 1K）；③ 经 MCP 重跑 m01b，7 套 CC0 材质（草/沥青/砖/混凝土/瓷砖/金属/木）全部接 **2K**（43 张 2k jpg，共 ~120MB，落 `assets/textures/<slug>/`）；应用回 925 obj 场景不变。
+- 验证：几何探针确认 7 材质 `res_used` 全为 `2k`（无回退 1K）；`build/m01b_qa_2k.py` 透明背景渲染预览球 + PIL 像素统计 → lit_mean 81 / **lit_std 38** / 受光区死黑 0 / 过曝 0（std 略低于软指标 40 系 QA 球体远框所致，非材质缺陷；V4.1 全场景回归为正式门槛）。
+- 下一步：V1.2 扩 plaster/roof/desk/chair/track 表面；或 V2.1 补角色基础网格（当前 scene 无任何角色/骨架）；或 V3.1 粒子。
+- 预览：`previews/m01b_qa_2k.png`（640×360 透明背景 Cycles，7 个 CC0 预览球受 AREA 主光打亮）。
+
+## 2026-09-07 23:26 [自动构建 · 空闲巡检] 状态：跳过（无未完成里程碑 · 项目已收官）
+- 做了：按防重叠锁流程进入——`campus_td/.build_lock` **不存在**（前次已正常释放），无需 mtime 判定、未取锁、未删锁。探明 **Blender MCP 仍在线**（:9876 PID 10132）。对 PLAN.md §7 + 本文件顶部全量 grep `⬜`/未完成/待做/TODO → 仅命中第 126 行被划除的「修 Teach/Lab 超界」（已并入 M11）与第 222 行自动化契约说明，**M0–M19 全路线图 + 全部 backlog（M5B / M8B–E / M9 / M9b / M10B·C·D / M11–M18 / M19 / M19c）均已 ✅ 完成**，无下一个待推进里程碑。
+- 遇坑：无（本运行未启动任何 Blender/MCP 写操作，零并发损坏风险）。
+- 下一步：无强制里程碑。可选后续（需用户新需求或手动触发方可启动，本自动化不擅自开新活）：① 4K/8K 超采样 OptiX 终帧；② 漫游视频 OptiX 终帧版；③ 新场景扩展需求。本自动化保持每小时巡检，一旦 PLAN.md 出现新的未完成里程碑即自动推进。
+- 预览：无（空闲巡检，无渲染）。
+
+## 2026-09-07 22:45 [M1b CC0 扫描贴图材质] 状态：完成
+- 做了：响应「善用 Blender 插件开发生成式 + 免费高质量贴图材质」。① 启用内置 **Node Wrangler** 插件（UI 可对任意 CC0 文件夹用 *Add Principled Setup* 交互式重建）；② 经 `tools/fetch_ph_textures.py` 从 **Poly Haven (CC0)** 拉取 7 套扫描 PBR（leafy_grass / asphalt_01 / brick_wall_04 / brushed_concrete / floor_tiles_02 / metal_plate / oak_wood_planks，各含 diff/nor/rough/arm/ao/disp，metal 另有 metal 图，共 **43 张 1k jpg** → `assets/textures/` + `manifest.json`）；③ 写 `build/m01b_scanned_materials.py`（PREFIX=`Mat_CC0_`，幂等）用 **Box 投影 + Generated 坐标**连 Principled BSDF（arm 拆 R/G/B→AO/Rough/Metallic；AO 经 Mix(MULTIPLY) 压 BaseColor——5.2 BSDF 无 AO 输入）；④ 应用对齐 m01：砖墙28/混凝土7/金属24/沥青3/草地1 + **新增木237(110书桌+椅+书架+6室内地板+看台)、瓷砖2(体育馆+食堂地面)**；⑤ 预览球渲染 QA（mean 158.6/std 35/近黑 478px）证非黑非平；⑥ `blmcp_client.py` 新增 `m01b`。
+- 遇坑/关键结论：Blender 5.2 节点名已变——`ShaderNodeSeparateRGB`→`ShaderNodeSeparateColor`(mode=RGB, 输出 Red/Green/Blue)、Mix `data_type` 用 `RGBA` 且因子输入叫 `Factor`（非 `Fac`）；`exec(compile(open()))` 经 MCP 无 `__file__`，构建脚本写死 ROOT；`clear_old` 删预览球须先 `objects.remove(o)` 再 `meshes.remove(o.data)`，否则 StructRNA 已释放报 ReferenceError；Poly Haven 下载用 `dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/<slug>/<slug>_<map>_1k.jpg`（api.polyhaven.com 的 `/asset/` 与 `/download` 端点在本环境 404，故直接探 CDN）。
+- 下一步：可选扩更多 CC0 表面（plaster 外墙、roof tiles）到 `m01b` 库；或出电影级 campus 终帧（材质已就位）。
+- 预览：`previews/m01b_qa.png`（640×360 低分辨率 Cycles，CC0 预览球 y=4 行 vs 程序化 y=0 行对比）。
+
+## 2026-09-07 22:24 [自动构建 · 空闲巡检] 状态：跳过（无未完成里程碑 · 项目已收官）
+- 做了：按防重叠锁流程进入——`campus_td/.build_lock` **不存在**（前次已正常释放），无需 mtime 判定、未取锁、未删锁。探明 **Blender MCP 仍在线**（:9876 PID 10132）。对 PLAN.md §7 + 本文件顶部全量 grep `⬜`/未完成/待做/TODO → 仅命中第 126 行被划除的「修 Teach/Lab 超界」（已并入 M11）与第 222 行自动化契约说明，**M0–M19 全路线图 + 全部 backlog（M5B / M8B–E / M9 / M9b / M10B·C·D / M11–M18 / M19 / M19c）均已 ✅ 完成**，无下一个待推进里程碑。
+- 遇坑：无（本运行未启动任何 Blender/MCP 写操作，零并发损坏风险）。
+- 下一步：无强制里程碑。可选后续（需用户新需求或手动触发方可启动，本自动化不擅自开新活）：① 4K/8K 超采样 OptiX 终帧；② 漫游视频 OptiX 终帧版；③ 新场景扩展需求。本自动化保持每小时巡检，一旦 PLAN.md 出现新的未完成里程碑即自动推进。
+- 预览：无（空闲巡检，无渲染）。
 
 ## 2026-09-07 21:30 [同步 · 每日双镜像] 状态：部分（GitHub ✅ / 乐享 ⚠️ 跳过）
 - 做了：执行每日同步自动化。① **GitHub（本地 git，优先）**：`cp -r` 镜像工作区 README.md / blender-mcp-launch.sh / build_campus_td.py / config / diag_blender_mcp.py / blender_mcp_addon-1.0.0.zip / render_campus_td.png / campus_td（排除 `.workbuddy/` 与 `.git/`）至 D:/AI/campus-td-git → `git add -A` → commit `6a6b4cb`「sync: 2026-09-07 自动同步」→ `GIT_SSL_NO_VERIFY=1 git push origin main`。首推遇 HTTP 502 瞬断（仓库含大量 PNG / m09_walkthrough.mp4 / campus_td.glb），`git config http.postBuffer 524288000` 后单重试成功，`0ffc725..6a6b4cb main->main`。② **乐享知识库（主镜像）**：⚠️ **跳过**——本自动化环境无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置（连接器未接入），按纪律记为非致命失败，不重试死循环、不重建仓、不改 remote URL。

@@ -1,0 +1,88 @@
+{
+  "schema": "campus-td-visual-roadmap/v1",
+  "project": "campus_td",
+  "generated": "2026-09-07",
+  "base_state": {
+    "milestones_done": ["M0-M19", "M1b"],
+    "scene_objects": 925,
+    "mcp_port": 9876,
+    "blender": "5.2.1",
+    "materials": {"procedural": 10, "cc0_1k": 7},
+    "gaps": ["no character rigs", "no skeletal animation", "no particle systems"]
+  },
+  "phases": [
+    {
+      "id": "P1",
+      "name": "开发·高精度材质",
+      "tasks": [
+        {"id": "V1.1", "status": "done", "title": "CC0 贴图升 2K/4K", "goal": "将 7 套 CC0 材质从 1k 升至 2k/4k", "depends_on": [], "deliverable": "7套×6图(金属7)≤50张；2K≤4MB/4K≤16MB；m01b 预览球渲染 std≥40 近黑≤300px", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m01b --res 2k"}},
+        {"id": "V1.2", "title": "扩充表面类型", "goal": "新增 plaster/roof/desk/chair/track 5 类材质", "depends_on": ["V1.1"], "deliverable": "manifest.json 增5条目；各≥1对象应用", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m01b --add plaster,roof,desk,chair,track"}},
+        {"id": "V1.3", "title": "程序化细节图", "goal": "为 m01 程序化材质生成 AO/Curvature 细节", "depends_on": [], "deliverable": "砖/混凝土法线细节 std 较现状+15%", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m01 --detail-maps"}},
+        {"id": "V1.4", "title": "位移微几何", "goal": "英雄表面接 disp + Adaptive Subdivision", "depends_on": ["V1.1"], "deliverable": "近景渲染可见凹凸无撕裂", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m01b --disp"}},
+        {"id": "V1.5", "title": "材质密度/LOD", "goal": "每建筑独立 Mapping 密度 + 远处降分辨率", "depends_on": ["V1.1"], "deliverable": "无 popping；LOD 切换平滑", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m01b --lod"}}
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "开发·角色与场景动画",
+      "tasks": [
+        {"id": "V2.1", "title": "角色基础网格", "goal": "低模学生/教师/敌人各1", "depends_on": [], "deliverable": "≤1.5k tris/个；命名 Char_Student/Teacher/Enemy", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp char_base"}},
+        {"id": "V2.2", "title": "骨架与循环动画", "goal": "idle/walk/run/attack/die 循环", "depends_on": ["V2.1"], "deliverable": "walk/run≥24帧@30fps无缝；death≤1.2s", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp char_rig"}},
+        {"id": "V2.3", "title": "塔动画", "goal": "炮塔旋转/后坐/充能脉冲关键帧", "depends_on": [], "deliverable": "与 M7 光束同步", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m07_anim"}},
+        {"id": "V2.4", "title": "场景环境动画", "goal": "校旗/树摆/水涟漪", "depends_on": ["V1.1"], "deliverable": "每类1个可复用节点/修改器", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m05_ambient_anim"}},
+        {"id": "V2.5", "title": "电影机位序列", "goal": "扩展 M9 关键镜头", "depends_on": [], "deliverable": "≥90帧/镜头 贝塞尔缓动", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m09_anim"}},
+        {"id": "V2.6", "title": "状态反馈动画", "goal": "HUD/升级脉冲", "depends_on": [], "deliverable": "Web 端 CSS/Shader", "automation": {"type": "build", "trigger": "on_demand", "action": "web hud_anim"}}
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "开发·粒子特效",
+      "tasks": [
+        {"id": "V3.1", "title": "枪口/命中火花", "goal": "塔开火 muzzle+命中 sparks", "depends_on": ["V1.1", "V2.3"], "deliverable": "≤800粒/次 生命周期≤0.4s", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp vfx_muzzle"}},
+        {"id": "V3.2", "title": "敌人死亡爆裂", "goal": "敌消亡碎裂粒子", "depends_on": ["V2.2"], "deliverable": "≤1200粒 ≤0.8s", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp vfx_death"}},
+        {"id": "V3.3", "title": "减速冰霜场", "goal": "SLOW 力场冰霜粒子", "depends_on": ["P1"], "deliverable": "覆盖区持续 密度随等级", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp vfx_slow"}},
+        {"id": "V3.4", "title": "路径流光", "goal": "U形路径能量流光", "depends_on": [], "deliverable": "沿弧长匀速 密度稳定", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp vfx_path"}},
+        {"id": "V3.5", "title": "环境粒子", "goal": "尘埃/落叶/体积光", "depends_on": ["V1.1"], "deliverable": "全天循环无突跳 各1套", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp vfx_ambient"}},
+        {"id": "V3.6", "title": "出生/基地门", "goal": "出生红环+基地绿环", "depends_on": [], "deliverable": "与 M7 一致", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp vfx_portal"}}
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "测试·视觉与性能验证",
+      "tasks": [
+        {"id": "V4.1", "title": "像素统计回归", "goal": "变更自动渲染+PIL 统计", "depends_on": ["P1", "P2", "P3"], "deliverable": "qa/<run>.json；偏差>8%报警", "automation": {"type": "test", "trigger": "post_build", "action": "blmcp qa_render"}},
+        {"id": "V4.2", "title": "WebGL 性能剖析", "goal": "FPS/draw/显存", "depends_on": ["P1", "P3"], "deliverable": "FPS≥30 draw≤200 显存≤120MB", "automation": {"type": "test", "trigger": "post_build", "action": "playwright web_perf"}},
+        {"id": "V4.3", "title": "Headless 冒烟", "goal": "检测节点树损坏", "depends_on": ["P1", "P2", "P3"], "deliverable": "1帧渲染 无紫黑块", "automation": {"type": "test", "trigger": "post_build", "action": "blmcp smoke"}}
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "构建·打包与导出",
+      "tasks": [
+        {"id": "V5.1", "title": "OptiX 4K 终帧", "goal": "Cycles GPU OptiX 渲染终帧", "depends_on": ["P1", "P3"], "deliverable": "3840×2160 ≤540s/帧", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp render_optix_4k"}},
+        {"id": "V5.2", "title": "WebGL 包优化", "goal": "KTX2 压缩+合批", "depends_on": ["V1.1", "P3"], "deliverable": "单贴图≤1MB 包≤12MB", "automation": {"type": "build", "trigger": "on_demand", "action": "web build_optimized"}},
+        {"id": "V5.3", "title": "Godot/Unity 刷新", "goal": "重导出 glb 含新资产", "depends_on": ["P1", "P2", "P3"], "deliverable": "≤12MB 更新导出说明", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp m19b_refresh"}},
+        {"id": "V5.4", "title": "资产清单版本化", "goal": "manifest+版本哈希", "depends_on": ["P1", "P2", "P3"], "deliverable": "asset_version.json 可回滚", "automation": {"type": "build", "trigger": "on_demand", "action": "blmcp asset_version"}}
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "部署交付",
+      "tasks": [
+        {"id": "V6.1", "title": "静态托管+CI", "goal": "WebGL 部署 Pages/CDN", "depends_on": ["V5.2"], "deliverable": "URL 返回200 PR合并触发", "automation": {"type": "deploy", "trigger": "on_merge", "action": "ci pages"}},
+        {"id": "V6.2", "title": "桌面/移动构建", "goal": "可选可执行", "depends_on": ["V5.3"], "deliverable": "启动<3s", "automation": {"type": "deploy", "trigger": "on_demand", "action": "ci package"}},
+        {"id": "V6.3", "title": "发布说明与标签", "goal": "RELEASE_NOTES+tag", "depends_on": ["V5"], "deliverable": "vX.Y.Z", "automation": {"type": "deploy", "trigger": "on_release", "action": "ci release"}}
+      ]
+    },
+    {
+      "id": "P7",
+      "name": "运行维护",
+      "tasks": [
+        {"id": "V7.1", "status": "registered", "title": "夜间自动构建+QA", "goal": "每日构建+测试", "depends_on": ["V4", "V5"], "deliverable": "失败告警", "automation": {"type": "automation", "trigger": "daily 02:00", "action": "nightly_build_qa", "registered": true, "task_id": "6cf2f650-eceb-4eb7-b398-6cc9fe63713b", "note": "真实定时任务已注册(ACTIVE)，每日02:00跑m01b重建+QA渲染+PIL像素统计，基线lit_mean≈81/lit_std≈38，回归阈值lit_std<25或死黑>300或过曝>3%报警"}},
+        {"id": "V7.2", "title": "资产热更", "goal": "TDrive→assets 同步", "depends_on": ["V5.4"], "deliverable": "重算 manifest", "automation": {"type": "automation", "trigger": "on_tdrive_change", "action": "tdrive_sync"}},
+        {"id": "V7.3", "title": "遥测与反馈", "goal": "报错+评分", "depends_on": ["V6.1"], "deliverable": "周报 均分≥4.0", "automation": {"type": "automation", "trigger": "weekly_mon", "action": "telemetry_report"}},
+        {"id": "V7.4", "title": "CC0 合规审计", "goal": "许可证扫描", "depends_on": ["V1"], "deliverable": "全 CC0 无违约", "automation": {"type": "automation", "trigger": "quarterly", "action": "license_audit"}}
+      ]
+    }
+  ]
+}

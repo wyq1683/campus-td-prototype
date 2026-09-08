@@ -1,0 +1,10 @@
+# run_m20.py — Direct TCP Socket 执行 m20_4k_final.py（绕开 mcporter 60s 客户端超时）
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from blmcp_client import send_execute
+
+BUILD = r"D:/AI/WorkBuddy/Workspace/2026-09-05-23-46-59/campus_td/build/m20_4k_final.py"
+CODE = 'exec(compile(open(r"%s").read(), "m20", "exec"))' % BUILD
+
+resp = send_execute(CODE, strict_json=False, timeout=900.0)
+print(resp)
