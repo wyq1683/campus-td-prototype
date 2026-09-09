@@ -1,3 +1,9 @@
+## 2026-09-09 21:30 [每日同步自动化 · 双镜像] 状态：GitHub ✅ / 乐享 ⚠️
+- 做了：执行双镜像每日同步。GitHub（本地 git，优先）：`cp -r` 镜像 8 项（README/launch.sh/build_campus_td.py/config/diag_blender_mcp.py/zip/render png/campus_td）覆盖 D:/AI/campus-td-git，新增 `.gitignore` 排除 `.workbuddy/` 与 `.git/`；`git add -A` → commit `a779d90`（95 文件增改，`e373350..a779d90 main->main`）→ `GIT_SSL_NO_VERIFY=1 git push origin main` 成功。乐享知识库（主镜像）：⚠️ 跳过——本自动化环境连接器未接入（无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置），按纪律记为非致命失败，未重试死循环、未重建仓、未改 remote URL、未调 WorkBuddy 内置 403 只读集成。
+- 遇坑：无（GitHub 写通道畅通；CRLF 自动转换告警无害）。
+- 下一步：待乐享连接器就绪后补传主镜像文件；持续每日自动同步。
+- 预览：无（纯同步任务，无新增渲染产物）。
+
 ## 2026-09-09 21:00 [里程碑 M57 · 校门卫室门把手与门牌号 OptiX] 状态：完成
 - 做了：项目收官（M0–M56 ✅）后按 M56「下一步」首项新增 M57。写 `build/m57_guardhouse_details.py`（仅建，非破坏，5 个 `M57_` 物体 = HandlePlate/HandleStem/HandleBar/Plate/NumText，幂等清旧 `M57_`）+ `build/m57_render.py`（仅渲染）+ `tools/run_m57_build.py`、`tools/run_m57_render.py`（经 `tools/blmcp_client.py` 直连 9876 socket，build/render 分离，沿用 M56 教训）。金属门把手（背板+连杆+竖拉手，复用 `PBR_Metal`）+ 前墙右侧暗金属门牌号（底板 `M57_Plate` + CJK「1号」白字微自发光 `M57_NumText`，`pick_font` SimHei 自检通过 h=0.854）。坐标全部从 `M52_Door` 世界 AABB 动态读取（M11 之后铁律），零硬编码。
 - 遇坑：无（沿用 M52/M56 管线一次过）。
