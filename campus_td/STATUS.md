@@ -1,12 +1,13 @@
 # 结构化进度速查 · 高中校园塔防原型
 
 > 抗上下文压缩的"项目大脑"副件。每次推进项目时更新本文件（当前进度 / 待办 / 关键决策及理由 / 上下文摘要）。
-> 完整权威内容见 `PLAN.md`；详细流水见 `PROGRESS.md`；**玩法数值见 `DESIGN.md`**。最后更新：2026-09-09 21:30
+> 完整权威内容见 `PLAN.md`；详细流水见 `PROGRESS.md`；**玩法数值见 `DESIGN.md`**。最后更新：2026-09-10 21:30
 
 ---
 
 ## 一、当前进度（Current Progress）
 
+- **同步（2026-09-10 21:30 每日同步自动化 · 双镜像）**：GitHub 本地 git 镜像 ✅ **已推送**（commit `sync: 2026-09-10 自动同步`，110 文件增改，main->main；镜像 8 项 README/launch.sh/build_campus_td.py/config/diag_blender_mcp.py/zip/render png/campus_td，含 M58–M69 等新增 build 脚本与预览，`.gitignore` 排除 `.workbuddy/` 与 `.git/`，本轮新增 `__pycache__/` 防提交字节码，CRLF 自动转换告警无害；未改 remote URL、未重建仓、未调 WorkBuddy 内置 403 只读集成）；乐享知识库 ⚠️ **跳过**（本自动化环境连接器仍未接入——无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置，按纪律记为非致命失败，待连接器就绪后补传 PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh 及绕 WAF 的 diag 脚本）。
 - **同步（2026-09-09 21:30 每日同步自动化 · 双镜像）**：GitHub 本地 git 镜像 ✅ **已推送**（commit `a779d90`，95 文件增改，`e373350..a779d90 main->main`；镜像 8 项 README/launch.sh/build_campus_td.py/config/diag_blender_mcp.py/zip/render png/campus_td，新增 `.gitignore` 排除 `.workbuddy/` 与 `.git/`，CRLF 自动转换告警无害）；乐享知识库 ⚠️ **跳过**（本自动化环境连接器仍未接入——无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置，按纪律记为非致命失败，待连接器就绪后补传 PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh 及绕 WAF 的 diag 脚本）。
 - **同步（2026-09-08 21:30 每日同步自动化 · 双镜像）**：GitHub 本地 git 镜像 ✅ **已推送**（commit `6940b85`，112 文件增改，`4671476..6940b85 main->main`；镜像 8 项 README/launch.sh/build_campus_td.py/config/diag_blender_mcp.py/zip/render png/campus_td，已排除 .workbuddy/ 与 .git/；CRLF 自动转换告警无害）；乐享知识库 ⚠️ **跳过**（本自动化环境连接器仍未接入——无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置，按纪律记为非致命失败，待连接器就绪后补传 PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh 及绕 WAF 的 diag 脚本）。
 - **同步（2026-09-07 21:30 每日同步自动化 · 双镜像）**：GitHub 本地 git 镜像 ✅ **已推送**（commit `6a6b4cb`，236 文件 / 11105 增改，`0ffc725..6a6b4cb main->main`；首推遇 HTTP 502 瞬断，`http.postBuffer` 调大后单重试成功）；乐享知识库 ⚠️ **跳过**（本自动化环境连接器未接入——无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置，按纪律记为非致命失败，待连接器就绪后补传 PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh 及绕 WAF 的 diag 脚本）。

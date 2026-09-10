@@ -119,6 +119,7 @@ uniform int   uNBm;
 uniform vec4  uBm[16];     // x1,z1,x2,z2（地面锁定线）
 
 const float PI = 3.14159265;
+const float FOG_FAR = 240.0;  // 与球体追踪远平面一致，命中距离归一化后存进 alpha 供雾使用
 
 // ---------- 基础 SDF ----------
 float sdSeg(vec2 p, vec2 a, vec2 b){
@@ -392,11 +393,68 @@ void main(){
     col += ec * (core * (0.55 + 0.45 * hp) + halo * halo * 0.16);
   }
 
-  // ---- 4) 后处理 ----
+  // ---- 4) 输出到离屏缓冲：RGB=场景色(线性)，A=归一化线深度(0近/1远) ----
+  // 暗角/ACES/颗粒 + 雾/光晕全部搬到 POST_FRAG 里做
+  fragColor = vec4(col, clamp(t / FOG_FAR, 0.0, 1.0));
+}`;
+
+// ===========================================================================
+// 后期片段着色器：Fog & Bloom（RGBA 离屏缓冲 → 屏幕）
+//   · 雾：用 alpha 通道的归一化深度做距离雾（天空 depth≈1 不雾，保留渐变）
+//   · 光晕：对亮部做 5x5 模糊 bright-pass，叠加发光
+//   · 沿用原暗角 + ACES + 颗粒
+// ===========================================================================
+const POST_FRAG = `#version 300 es
+precision highp float;
+out vec4 fragColor;
+uniform vec2  uRes;
+uniform float uTime;
+uniform sampler2D sScene;
+uniform vec3  uFogColor;
+uniform float uFogNear;     // 0..1 归一化深度起点
+uniform float uFogFar;      // 0..1 归一化深度终点
+uniform float uFogAmt;      // 雾最大混合量
+uniform float uBloomThresh; // 亮部阈值
+uniform float uBloomInt;    // 光晕强度
+uniform float uBloomRadius; // 模糊半径(像素)
+
+vec3 aces(vec3 x){
+  return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+}
+float hash21(vec2 p){
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes;
+  vec4 sc = texture(sScene, uv);
+  vec3 col = sc.rgb;
+  float depth = sc.a;
+
+  // ---- 距离雾（天空 depth≈1 不雾，保留天空渐变）----
+  float fogF = smoothstep(uFogNear, uFogFar, depth) * uFogAmt;
+  if(depth < 0.999) col = mix(col, uFogColor, fogF);
+
+  // ---- 光晕：5x5 bright-pass 模糊 ----
+  vec2 texel = 1.0 / uRes;
+  vec3 bloom = vec3(0.0);
+  for(int x = -2; x <= 2; x++){
+    for(int y = -2; y <= 2; y++){
+      vec2 o = vec2(float(x), float(y)) * texel * uBloomRadius;
+      vec3 s = texture(sScene, uv + o).rgb;
+      bloom += max(vec3(0.0), s - uBloomThresh);
+    }
+  }
+  bloom /= 25.0;
+  col += bloom * uBloomInt;
+
+  // ---- 沿用原后处理：暗角 + ACES + 颗粒 ----
   vec2 q = gl_FragCoord.xy / uRes;
-  col *= 0.5 + 0.5 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.24);  // 暗角
+  col *= 0.5 + 0.5 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.24);
   col = aces(col * 1.06);
-  col += (hash21(gl_FragCoord.xy + fract(uTime) * 91.7) - 0.5) * 0.020;        // 颗粒
+  col += (hash21(gl_FragCoord.xy + fract(uTime) * 91.7) - 0.5) * 0.020;
   fragColor = vec4(col, 1.0);
 }`;
 
@@ -652,19 +710,56 @@ function compile(type, src) {
     throw new Error(gl.getShaderInfoLog(s) + "\n" + src.split("\n").map((l, i) => (i + 1) + ": " + l).join("\n"));
   return s;
 }
-const prog = gl.createProgram();
-gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
-gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
-gl.linkProgram(prog);
-if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
-gl.useProgram(prog);
+function makeProg(fragSrc){
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fragSrc));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+const sceneProg = makeProg(FRAG);
+const postProg  = makeProg(POST_FRAG);
 gl.bindVertexArray(gl.createVertexArray());
+
+// 离屏缓冲：RGBA8，RGB=场景色，A=归一化深度
+let fbo = null, fboTex = null, fboW = 0, fboH = 0;
+function ensureFBO(W, H){
+  if (fbo && fboW === W && fboH === H) return;
+  if (fboTex) gl.deleteTexture(fboTex);
+  if (fbo)    gl.deleteFramebuffer(fbo);
+  fboTex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, fboTex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  fbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fboTex, 0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  fboW = W; fboH = H;
+}
 
 const U = {};
 for (const n of ["uRes", "uTime", "uCamPos", "uCamMat", "uFocal", "uNB", "uNT", "uRange", "uNE", "uNBm"])
-  U[n] = gl.getUniformLocation(prog, n);
+  U[n] = gl.getUniformLocation(sceneProg, n);
 for (const n of ["uWP", "uBld", "uBldH", "uTwr", "uEnm", "uEnmHp", "uBm"])
-  U[n] = gl.getUniformLocation(prog, n + "[0]");
+  U[n] = gl.getUniformLocation(sceneProg, n + "[0]");
+
+const UP = {};
+for (const n of ["uRes", "uTime", "sScene", "uFogColor", "uFogNear", "uFogFar", "uFogAmt", "uBloomThresh", "uBloomInt", "uBloomRadius"])
+  UP[n] = gl.getUniformLocation(postProg, n);
+
+// 后期参数（可调）
+const FOG_COLOR    = [0.05, 0.085, 0.13];   // 冷调雾色，贴合夜/暮场景
+const FOG_NEAR     = 0.18;                   // 归一化深度起点（更近不雾）
+const FOG_FAR      = 0.92;                   // 归一化深度终点（更远全雾）
+const FOG_AMT      = 0.62;                   // 雾最大混合量
+const BLOOM_THRESH = 0.62;                   // 亮部阈值
+const BLOOM_INT    = 0.85;                   // 光晕强度
+const BLOOM_RADIUS = 6.0;                    // 模糊半径(像素)
 
 // ===========================================================================
 // 相机与投影
@@ -828,6 +923,7 @@ function frame(now) {
   const W = Math.floor(cv.clientWidth * dpr), H = Math.floor(cv.clientHeight * dpr);
   if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
   gl.viewport(0, 0, W, H);
+  gl.useProgram(sceneProg);   // 切到场景程序再灌 uniform
 
   const c = camBasis();
   gl.uniform2f(U.uRes, W, H);
@@ -878,7 +974,31 @@ function frame(now) {
   gl.uniform1i(U.uNBm, nb);
   gl.uniform4fv(U.uBm, bmArr);
 
+  // ---- Pass 1：场景 → 离屏 FBO（RGBA：RGB=色, A=深度）----
+  ensureFBO(W, H);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.viewport(0, 0, W, H);
+  gl.useProgram(sceneProg);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  // ---- Pass 2：后期（雾 + 光晕 + 暗角/ACES/颗粒）→ 屏幕 ----
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, W, H);
+  gl.useProgram(postProg);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, fboTex);
+  gl.uniform1i(UP.sScene, 0);
+  gl.uniform2f(UP.uRes, W, H);
+  gl.uniform1f(UP.uTime, tAcc);
+  gl.uniform3f(UP.uFogColor, FOG_COLOR[0], FOG_COLOR[1], FOG_COLOR[2]);
+  gl.uniform1f(UP.uFogNear, FOG_NEAR);
+  gl.uniform1f(UP.uFogFar, FOG_FAR);
+  gl.uniform1f(UP.uFogAmt, FOG_AMT);
+  gl.uniform1f(UP.uBloomThresh, BLOOM_THRESH);
+  gl.uniform1f(UP.uBloomInt, BLOOM_INT);
+  gl.uniform1f(UP.uBloomRadius, BLOOM_RADIUS);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
   hud();
   requestAnimationFrame(frame);
 }

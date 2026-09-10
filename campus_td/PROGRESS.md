@@ -1,3 +1,154 @@
+## 2026-09-10 21:30 [每日同步自动化 · 双镜像] 状态：GitHub ✅ 已推送 / 乐享知识库 ⚠️ 跳过
+- 做了（每日同步自动化）：① GitHub 本地 git 镜像——cp -r 覆盖 8 项（README/launch.sh/build_campus_td.py/config/diag_blender_mcp.py/zip/render png/campus_td，排除 .workbuddy/ 与 .git/）至 D:/AI/campus-td-git；新增 `__pycache__/` 至 .gitignore 防提交字节码；git add -A → commit "sync: 2026-09-10 自动同步" → GIT_SSL_NO_VERIFY=1 push origin main ✅（main->main，未改 remote URL、未重建仓、未调 WorkBuddy 内置 403 只读集成）；② 乐享知识库 ⚠️ 跳过（本自动化环境连接器仍未接入——无 mcp__lexiangla__* 工具、mcp.json 无 lexiang 配置，按纪律记为非致命失败，待连接器就绪后补传 PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh 及绕 WAF 的 diag 脚本）。
+- 预览：GitHub 镜像见 wyq1683/campus-td-prototype（main）
+
+## 2026-09-10 20:46 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：复检就绪 · 新增 PLAN §7 条目）
+- 防重叠锁：无旧锁 → 建锁(20:46) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·复检 + 补全权威文档）：Blender MCP 仍离线（`:9876` 无 LISTENING、无 blender 进程）。本轮：① 重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）；② 将 M69 升旗台条目补入 PLAN.md §7 路线图（此前仅存在于自动化 memory 与脚本，未入权威计划书），并把文件头「最后更新」改为 20:46，确保未来读 PLAN.md 能正确定位下一里程碑。RESEARCH.md 已含 M69 全部离线小节，不重复追加。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`，据像素统计确认后回写 PLAN.md §7（标 ✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 19:42 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：首跑前逻辑复检 · 修金顶重影 bug）
+- 防重叠锁：无旧锁 → 建锁(19:42) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·首跑前逻辑复检）：Blender MCP 仍离线（`:9876` 无 LISTENING、无 blender 进程）。本轮在 py_compile 之外做**首次运行才会暴露的逻辑级复检**，发现并修复一个真 bug：**金顶球冠重影（z-fighting）**——原 `build/m69_flag_platform.py` 把金色 icosphere 同时并入 `bm_pole`（仅挂 metal 材质 → 实为金属色）又作为独立 `M69_Finial`（gold）建在同一杆顶位置 → 两球重合。已删除并入 `bm_pole` 的那份球冠、金顶只由 `M69_Finial` 提供；`py_compile` 复检通过、`bm_pole.verts.new` 现仅 1 处（圆柱）。`m69_render.py` 复核无误（合法 `bpy.ops.render.render` 出图、OptiX/AgX/复用 m06 基线）。已更正 RESEARCH.md 12:16 小节"金顶并入同 mesh"旧描述并追加 19:42 小节。
+- 遇到：Blender 实例未运行，`:9876` 无监听；本运行无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），据像素统计（aerial 无过曝、hero 台基/藏青校旗/金顶清晰）确认后回写 PLAN.md §7 + PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 18:39 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：深度静态核验 · 四件套达标待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(18:39) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·深度静态核验）：Blender MCP 仍离线（`:9876` 无 LISTENING、无 blender 进程）。本轮**不止复检 `py_compile`**，对 M69 四件套做了更深入的静态核验：① 四文件 `py_compile` 全过；② 确认 `tools/run_m69_build.py`/`run_m69_render.py` 经 `tools/blmcp_client.py` 的 `send_execute` 直连 9876 socket，路径精确指向 `build/m69_flag_platform.py`/`m69_render.py`；③ 逐条命中安全不变量：PREFIX="M69_"、`clear_old` 先 `nm=o.name` 再 `objects.remove`(pitfall #16)、模块级 `collision_check()` 在 (0,28) 净空自检、坐标全部 `matrix_world @ bound_box` 动态读（仅 `M11_FlagPole(-3,0)` 出现在注释、非脚本坐标）、相机纯 data-API 建（无 `camera_add`）；④ 确认 `bpy.ops`/`mode_set`/`select_all` 仅存于注释、零实际 operator 调用。结论：脚本为「在线即首跑」最终形态、未漂移。RESEARCH.md 已含 M69 全部离线小节，不重复追加。
+- 遇到：Blender 实例未启动或已退出，`:9876` 无监听；本运行无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线后（`:9876` 监听）直接 `tools/run_m69_build.py` → `tools/run_m69_render.py`，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')` 复用 m06 权威基线防孤儿天光），据像素统计（aerial 无过曝、hero 台基/藏青校旗/金顶清晰）确认后回写 PLAN.md §7 + PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 17:34 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：持续等待 · 四件套 py_compile 复检全过、待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(17:34) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·持续等待）：Blender MCP 仍离线（`:9876` 无 LISTENING、无 blender 进程）。M69 四件套（`build/m69_flag_platform.py`+`m69_render.py`+`tools/run_m69_build.py`+`run_m69_render.py`）自 09-10 11:02 起已就绪，本轮 `py_compile` 复检四件**全过**，并复核 `bpy.ops`/`mode_set`/`camera_add`/`select_all` 仅出现在 docstring/注释、无任何实际调用（render 脚本的 `bpy.ops.render.render` 为合法出图调用，属 M57–M68 既定 render 范式，非 mode_set 类高危 operator）。确认脚本未漂移、仍为「零 operator / 真圆柱旗杆 / 前缀幂等 / 碰撞自检」的在线即首跑形态。RESEARCH.md 已含全部 M69 离线小节，本轮不重复追加。
+- 遇到：Blender 实例未启动或已退出，`:9876` 端口无监听；本运行无法实跑 M69 构建与渲染。
+- 下一步：Blender 在线后（`:9876` 监听）直接 `tools/run_m69_build.py` → `tools/run_m69_render.py`，经 `blmcp_client.py` 直连 9876 socket、build/render 分离；落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')` 复用 m06 权威基线防孤儿天光），据像素统计（aerial 无过曝、hero 台基/藏青校旗/金顶清晰）确认后回写 PLAN.md §7 + PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 16:31 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：持续等待 · 四件套仍达标待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(16:31) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·持续等待）：Blender MCP 仍离线（`:9876` 无 LISTENING、无 blender 进程）。M69 四件套（`build/m69_flag_platform.py`+`m69_render.py`+`tools/run_m69_build.py`+`run_m69_render.py`）自 09-10 11:02 起已就绪，本轮 `py_compile` 复检四件**全过**（M69_PY_COMPILE_OK），确认脚本未漂移、仍为「零 operator / 真圆柱旗杆 / 前缀幂等 / 碰撞自检」的在线即首跑形态。operator 风险扫描确认 `mode_set`/`camera_add`/`select_all`/`bpy.ops` **仅出现在注释/docstring，无任何实际调用**。RESEARCH.md 已含 M69 全部离线预检/加固小节（13:22 相机 data-API / 11:02 技术研究 / 12:16 静态校验+圆柱化 / 14:25 最终预检），本轮不重复追加。
+- 遇到：Blender 实例未启动或已退出，`:9876` 端口无监听；本运行无法实跑 M69 构建与渲染。
+- 下一步：Blender 在线后（`:9876` 监听）直接 `tools/run_m69_build.py` → `tools/run_m69_render.py`，经 `blmcp_client.py` 直连 9876 socket、build/render 分离；落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')` 复用 m06 权威基线防孤儿天光），据像素统计（aerial 无过曝、hero 台基/藏青校旗清晰）确认后回写 PLAN.md §7 + PROGRESS 顶部。
+
+## 2026-09-10 15:28 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：持续等待 · 四件套仍达标待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(15:28) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·持续等待）：Blender MCP 仍离线（`:9876` 无 LISTENING、无 blender 进程）。M69 四件套（`build/m69_flag_platform.py`+`m69_render.py`+`tools/run_m69_build.py`+`run_m69_render.py`）自 09-10 11:02 起已就绪，本轮仅做 `py_compile` 复检——四件全通过（M69_PY_COMPILE_OK），确认脚本未漂移、仍为「零 operator / 真圆柱旗杆 / 前缀幂等 / 碰撞自检」的在线即首跑形态。RESEARCH.md 已含 M69 全部离线预检/加固小节，本次不重复追加（避免噪声）。
+- 遇到：环境状态——Blender 进程未运行，无法实跑构建或出图；非脚本错误。
+- 下一步：等待 Blender 在线后由下一轮自动化实跑 `tools/run_m69_build.py`→`tools/run_m69_render.py`，落盘 `previews/m69_flag_platform_hero.png`+`m69_flag_platform_aerial.png`，据像素统计（aerial 无过曝、hero 台基/藏青校旗/金顶清晰）确认后回写 PLAN.md §7 + PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 14:25 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：最终预检 · 四件套达标待在线首跑）
+- 做了：防重叠锁协议——无旧锁→建锁(14:25)→检 `:9876` 无 LISTENING（Blender 离线）→走离线分支→删锁收尾。对 M69 四件套（`build/m69_flag_platform.py`+`m69_render.py`+`tools/run_m69_build.py`+`run_m69_render.py`）做**最终离线预检**：`py_compile` 全通过；禁止调用扫描确认 `mode_set`/`camera_add`/`select_all`/`bpy.ops` 仅存于注释、无实际调用（整脚本零 operator，MCP headless 最稳形态）；关键加固逐条命中（`clear_old` 先 `nm=o.name`、`create_cone` 真圆柱、纯 data-API 相机、`collision_check` 自检）。结论：脚本已达「在线即首跑」状态，无需再改。要点追加 `RESEARCH.md`（M69 最终离线预检小节）。
+- 遇到：`netstat -ano|grep ':9876'` 无 LISTENING、无 blender 进程 → Blender MCP 仍离线，无法实跑构建/出图；属环境状态，非脚本错误（脚本已就绪、已最终预检）。
+- 下一步：等待 Blender 在线后由下一轮自动化实跑 `tools/run_m69_build.py`→`tools/run_m69_render.py`，落盘 `previews/m69_flag_platform_hero.png`+`m69_flag_platform_aerial.png`，据像素统计（aerial 无过曝、hero 台基/藏青校旗/金顶清晰）确认后回写 PLAN.md §7 + PROGRESS 顶部。可选：旗台落主旗杆 (-3,0) 须人工先 relocate M46 自行车棚释放净空。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 13:22 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：实跑前静态加固 · 脚本就绪待下次实跑）
+- 防重叠锁：无旧锁 → 建锁(13:22) → 检 `:9876` 无 LISTENING（Blender 离线，无 blender 进程）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·实跑前静态加固）：M69 四件套（`build/m69_flag_platform.py`+`m69_render.py`+`tools/run_m69_build.py`+`run_m69_render.py`）已就绪但**从未成功实跑**（前两次均遇 Blender 中途离线/崩溃）。本轮不重写脚本，对 `build/m69_flag_platform.py` 做**实跑前加固**：把唯一一处 `bpy.ops.object.camera_add` 改为纯 data API 建相机（`bpy.data.cameras.new` + `bpy.data.objects.new` + link），消除 headless MCP exec 对上下文/活动对象的依赖；改后整脚本**零 operator 调用**。复核其余部分已稳（全 `bmesh.ops` 直建、旗杆真圆柱、`clear_old` 先 `nm=o.name` 再 remove、材质按名复用/重建、`collision_check()` 模块级自检跳过 >70m 假大盒）。四件套 `python -m py_compile` 全部通过。加固要点追加 `RESEARCH.md`（M69 离线加固小节）。
+- 遇到：`netstat -ano|grep ':9876'` 无 LISTENING、`tasklist` 无 blender 进程 → Blender MCP 仍离线，无法实跑构建/出图；属环境状态，非脚本错误（脚本已就绪、本轮已加固）。
+- 下一步：等待 Blender 在线后由下一轮自动化实跑 `tools/run_m69_build.py`→`tools/run_m69_render.py`，落盘 `previews/m69_flag_platform_hero.png`+`m69_flag_platform_aerial.png`，据像素统计（aerial 无过曝、hero 台基/藏青校旗/金顶清晰）确认后回写 PLAN.md §7 + PROGRESS 顶部。可选：旗台若要落主旗杆 (-3,0)，需人工先 relocate M46 自行车棚释放净空（破坏性变更，自动化不动）。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 12:16 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（Blender 离线，离线分支：静态校验 + 旗杆圆柱化改进）
+- 防重叠锁：无旧锁 → 建锁(12:16) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·静态校验 + 改进）：复核 M69 四件套（`build/m69_flag_platform.py`+`m69_render.py`+`tools/run_m69_build.py`+`run_m69_render.py`）与 PLAN §8 避坑一致；`python -m py_compile` 两脚本通过。改进：12m 旗杆由细长 box 方截面改为 `bmesh.ops.create_cone(radius1==radius2, segments=16)` 真圆柱，消方柱生硬感（纯 bmesh、无 mode_set、MCP 安全）；杆顶金顶仍 icosphere 并入同 mesh。校验要点与圆柱化技巧已追加 `RESEARCH.md`。
+- 遇到：本运行 Blender MCP 未在线（`:9876` 拒绝连接），无法实跑构建/出图；属环境状态，非脚本错误（脚本已就绪，非首跑）。
+- 下一步：等待 Blender 在线后由下一轮自动化实跑 `tools/run_m69_build.py`→`tools/run_m69_render.py`，落盘 `previews/m69_flag_platform_hero.png`+`m69_flag_platform_aerial.png`，据像素统计（aerial 无过曝、hero 台基/藏青校旗/金顶清晰）确认后回写 PLAN.md §7 + PROGRESS 顶部。可选：旗台落主旗杆 (-3,0) 须人工先 relocate M46 自行车棚释放净空。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 11:02 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（构建脚本就绪，本运行 Blender 中途离线）
+- 防重叠锁：无旧锁 → 建锁(11:01) → 写 `build/m69_flag_platform.py`+`m69_render.py`+`tools/run_m69_build.py`+`run_m69_render.py` → 实跑 `run_m69_build.py` 时 Blender MCP 返回空响应，复测 `:9876` 拒绝连接、`tasklist` 无 blender 进程 → **Blender 已退出（离线分支）**。按规程删除 `.build_lock` 收尾。
+- 做了（离线分支·研究+脚本就绪）：M69 是 M62–M68 连续多轮「下一步」首推的「升旗台」，但长期被 M46 自行车棚选址 bug 阻塞——`M11_FlagPole(-3,0)` 被 M46 包围盒(x∈[-6.2,6.2] y∈[-16.05,1.8])压住，relocate M46 属破坏性变更（待人工决定），故改为**非破坏解**：在探针确认的北侧净空 assembly ground **(0,28)** 新建独立完整升旗台（抬升台基 8×6×0.6m + 三级踏步 + 中央讲台 + 自带 φ0.12/12m 金属旗杆 + 金顶 + 藏青校旗）。脚本含防御性碰撞自检，与 M11 之后铁律一致（坐标从探针读、只清 `M69_` 前缀、复用 `PBR_Concrete`/`PBR_Metal`）。已把技术要点与避坑追加到 `RESEARCH.md`。
+- 遇到：本运行 Blender 进程在中途退出（构建第一次 exec 返回空、随后连接被拒、进程消失），无法出图；属环境问题，非脚本错误。
+- 下一步：等待 Blender 重新上线后，由下一轮自动化（已就绪脚本）实跑 `run_m69_build.py`→`run_m69_render.py`，落盘 `previews/m69_flag_platform_hero.png`+`m69_flag_platform_aerial.png`，并据像素统计（aerial 应无过曝、hero 台基与校旗清晰）确认后更新 PLAN.md §7 + PROGRESS 顶部。可选继续：升旗台若要落在主旗杆处，需人工先修 M46 自行车棚选址释放 (-3,0) 净空。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 09:45 [里程碑 M68 · 校内主车道停车场车位标线（Campus Driveway Parking Stall Markings） OptiX] 状态：完成
+- 防重叠锁：无 `.build_lock`（建锁 09:36）→ 研究 M67「下一步」候选 → 写 `build/m68_parking.py` + `build/m68_render.py` → 调试相机/曝光 → 渲染 → 删锁。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket；build/render 分离）。项目收官（M0–M67 ✅），按「无未完成里程碑时自增改进项」新增 M68：M67「下一步」首推的「停车场车位标线（画在车道上零 3D 冲突）」。
+- 设计：从 Road/Road.001/Road.002 中动态读取 AABB，选最长直段（Road，水平，x∈[-22,18], y∈[-14.6,-11.4]），在路面内侧画一条白色垂直停车湾：两道平行边线 + 14 道垂直分隔档（间距 2.6m）+ 白 "P" 停车符号。全部 thin box（z=road_top+0.05）合并为 `M68_Paint` 单 mesh，材质白底 Emission 0.12，白天可读。坐标零硬编码（M11 后铁律）。
+- 遇坑（已固化）：① 首版相机 top-down z=38 lens40，结果画面被楼墙/运动场/减速带填满、停车湾仅占小条且昏暗 → 改低 3/4 从路面南侧 (cx, cy-18, 14) lens32 看入，构图稳定。② 楼间道路阴影重，首版 hero meanRGB~22、dark 48% → 在 `m68_render.py` 中对 hero 单独提亮 exposure +0.8（仅本帧，不影响 aerial/场景光照），最终 meanRGB(44.5,39.5,31.7)/过曝0%/dark9.2%。③ hero 中可见悬浮塔环/敌人等玩法层遮挡 → 沿用 M67 隐藏 overhead clutter 列表并追加 `Tower_` 前缀。
+- 验证：n_removed_old=2（幂等重建）、n_m68_objects=2、`M68_Paint` 为单一合并 mesh、`M68_Cam` 为低 3/4 机位；n_total 1791→1793（零破坏其它物体）；像素统计 hero meanRGB(44.5,39.5,31.7)/过曝0%/dark9.2%（停车白线清晰可读），aerial meanRGB(112.1,122.4,128.8)/过曝0%/dark1.2%。落盘 `previews/m68_parking_hero.png` + `previews/m68_parking_aerial.png`。
+- 下一步：维持收官。可选：升旗台（须先修 M46 自行车棚选址，释放旗杆底净空）/ 换卡真 4K（受 8GB VRAM 限）。
+
+## 2026-09-10 07:18 [里程碑 M67 · 校园主干道减速带（Campus Driveway Speed Bumps） OptiX] 状态：完成
+- 防重叠锁：续跑前情（M67 脚本已就绪、相机曾设 top-down z=15 但**尚未重渲核验**、hero 中心呈绿白 (194,228,197) 而非黄带）→ 本轮重跑 build+render 核验 → 删锁（07:18）。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket；build/render 分离）。项目收官（M0–M66 ✅），按「无未完成里程碑时自增改进项」新增 M67：校园主干道（Road/Road.001/Road.002 U 形环线，M10 塔防路径正铺设其上）中段缺最显眼的车行安全标识「减速带」（M58 只刷蓝色边线）。写 `build/m67_speed_bumps.py`（非破坏，7 个 `M67_` 物体 = BumpBase×3 + BumpTop×3 + Cam，幂等清旧 `M67_`）+ `build/m67_render.py`。沿 3 条路面中段各铺 1 条黄黑减速带（深灰橡胶底座 + 饱和黄顶 Emission 0.6 防 AgX 过曝发白），中心坐标 (-2,-13)/(16,0)/(-2,13) 从路面 AABB 精确读（随路径重建贴合）。
+- 遇坑（已固化，关键）：① `hide_viewport` **不影响 Cycles 渲染** → 隐藏物体必须 `hide_render=True`（两标志都设、渲染后恢复），否则敌人/看台/血条/路径标记进画面；② AgX 下强自发光黄被冲淡发白 → 低 emissive 0.6 + 漫反射黄；③ 校园俯视遮挡事实：3 条减速带正上方被 `M41_Bleacher_S_4`/`M41_Bleacher_N_4`(z=3.0 看台) / `M7_Ring_Tower_2`(z=0.28) / 悬浮 `Enemy_7`(z=1.85)+`M10D_HPfill_Enemy_7`(z=3.27 血条) / 扁平 `M7_Path`(z=0.95) 挡 → hero 隐藏 overhead clutter（`M10D_`/`M10C_`/`Enemy_`/`M41_Bleacher_`/`M7_Path`/`M7_Ring_Tower_`/`M46_`/`M50_`/`M58_`，仅 hero；aerial 恢复）；`M67_Cam` 俯视南段 idx0 loc(-2,-13,5) lens35。
+- 验证：n_total 1784→1791（零破坏其它物体）；像素核验 hero meanLum27.4/过曝0%/dark1.41%/**yellow 6.15%**（质心(960,540)居中）/中心区黄 34.90%/**中心像素 RGB(203,178,61) 清晰饱和黄**；aerial meanLum120.1 减速带清晰可见。落盘 `previews/m67_speed_bumps_hero.png` + `previews/m67_speed_bumps_aerial.png`。已更新 PLAN.md §7 + 顶部时间戳。
+- 下一步：维持收官。可选：升旗台（须先修 M46 自行车棚选址）/ 停车场车位标线（画在车道上零 3D 冲突）/ 换卡真 4K（受 8GB VRAM 限）。
+
+## 2026-09-10 06:15 [里程碑 M66 · 室外健身器材区（Outdoor Fitness / Calisthenics Area） OptiX] 状态：完成
+- 防重叠锁：建锁 06:08 → 构建 → 渲染 → 删锁（06:15）。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket；build/render 分离，沿用 M56–M65 教训）。项目收官（M0–M65 ✅），按「无未完成里程碑时自增改进项」新增 M66。写 `build/m66_fitness.py`（非破坏，20 个 `M66_` 物体 = 橡胶地垫 + 双杠(2杠4腿) + 单杠(2柱1杠) + 肋木(2柱5档) + 指示牌(板+字) + Cam，幂等清旧 `M66_`）+ `build/m66_render.py`。
+- 选址：网格探针确认 96m 校园内部仅 NE 草坪（x≈33, y≈19，临近 M62 凉亭花园）有净空；脚本内嵌 placement 搜索（候选点 + SOLID 碰撞自检 margin 0.5），建筑再挪也贴合。唯一告警 `M51_Hedge` = 校园级合并绿篱环虚假大 AABB（同 M62/M65 已知误报，不构成真冲突）。
+- 遇坑（已固化）：① 初选 18×4m 跳远沙坑紧贴运动场 → 探针发现运动场四周被跑道/看台/球门/泛光灯塔/羽毛球场/车道填满，唯一净空落在校园边界外（y=-52/52, x=-59），故改做更紧凑可落位的健身器材区。② 旗杆(-3,0)底被 M46 自行车棚屋顶 AABB(x∈[-6.2,6.2] y∈[-1.8,1.8])覆盖 → 升旗台方案被否（须先修 M46 选址释放旗杆底净空，破坏性变更待人工决定）。
+- 验证：n_removed_old=0、n_m66_objects=20、n_total 1764→1784（零破坏其它物体）；像素统计 hero meanLum52.3/过曝0%/dark0.87%/绿5.98%/金属0.43%、meanRGB(54,52,45)（NE 草坪有树荫，meanLum 偏低但 dark 远低于 M13 护栏 2% → 判内容偏暗非照明故障，设备清晰可读）。落盘 `previews/m66_fitness_hero.png`(2.93MB) + `m66_fitness_aerial.png`(2.26MB)。更新 PLAN.md §7 + PROGRESS.md 顶部。
+- 下一步：维持收官。可选：升旗台（须先修 M46 自行车棚选址，释放旗杆底净空）/ 停车场车位标线（画在车道上，零 3D 冲突）/ 换卡真 4K（受 8GB VRAM 限）。
+
+## 2026-09-10 04:56 [里程碑 M65 · 室外羽毛球场（Outdoor Badminton Courts） OptiX] 状态：完成
+- 防重叠锁：建锁 03:56 → 构建 → 渲染 → 删锁（05:05）。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket；build/render 分离，沿用 M56–M64 教训）。项目收官（M0–M64 ✅），按「无未完成里程碑时自增改进项」新增 M65：中国高中室外最常见的羽毛球场此前缺失（M38 足球/M41 看台/M47 乒乓/M64 篮球已覆盖其它球类）。写 `build/m65_badminton.py`（非破坏，10 个 `M65_` 物体 = Pad + 2×(Lines/Post×2/Net) + Cam，幂等清旧 `M65_`）+ `build/m65_render.py` + 直连出图。
+- 选址踩坑（已固化）：首版网格扫描用"全前缀排除"——校园级环境大盒（Ground 96×96 / M25 雾 90×90 / 天穹 / M50·M51 合并环线）与扁平塔防标记(Enemy_/M10B_)的 AABB 横跨全园，扫描把整园判为"无处可放"→ 误落兜底 (30,-22) 撞 36 个结构。修正：**只与实体结构求交 + 跳过任一维 >70m 的虚假大盒 + 扁平塔防标记不阻挡**；探针确认唯一大块实体净空 = 北区中庭（足球场 M38 北、Lab 南、图书馆/宿舍东）定点 (-3,16)，仅与扁平玩法层/标线叠加，无实体冲突（同 M62 思路）。
+- 遇坑（已修）：① `clear_old` 持 Object 引用跨移除触发 pitfall #16 `StructRNA ... has been removed` → 改按名字快照重查 `bpy.data.objects.get(nm)`，级联移除安全跳过。② 渲染 `view_settings.look="AgX"` 在 5.2 枚举改名 → 改 `"AgX - Base Contrast"`。
+- 验证：n_removed_old=10（首版坏物体全清）、n_m65_objects=10、n_total 1754→1764（零破坏其它物体）；solid_conflicts 仅 `M11_PlazaCourt`(扁平广场标线) + `M53_Cam`(相机非几何)，均无害；像素统计 hero meanRGB(68.8,56.0,42.3)/过曝0%/dark0.51%/绿4.4%（球场绿可见）、aerial meanRGB(112,122,128)/过曝0.01%/dark1.17%。落盘 `previews/m65_badminton_hero.png`(2.39MB)+`previews/m65_badminton_aerial.png`(2.16MB)。更新 PLAN.md §7 + PROGRESS.md 顶部。
+- 下一步：维持收官。可选：升旗台（需先处理 M46 自行车棚覆盖旗杆底，破坏性变更待人工决定）/ 围栏广告牌（与 M53 文化墙重复）/ 换卡真 4K（受 8GB VRAM 限）/ 室外排球场（北区中庭净空已占用，需另寻点位）。
+
+## 2026-09-10 03:45 [里程碑 M64 · 室外篮球架（Outdoor Basketball Hoops） OptiX] 状态：完成
+- 防重叠锁：无 `.build_lock`（建锁 03:43）→ build → render → 删锁（03:55）。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket；build/render 分离，沿用 M56–M63 教训）。项目收官（M0–M63 ✅）后按 M63「下一步」三条（升旗台撞 M46 自行车棚、围栏广告牌撞 M53、4K 受 8GB VRAM 限）全被占用 → 按"无未完成里程碑时自行增加改进项"原则新增 M64：中国高中最典型的室外篮球场此前完全缺失（运动场 M38–M42/M45/M47 全部围绕足球+田径）。写 `build/m64_basketball.py`（非破坏，19 个 `M64_` 物体 = 2×(Pole/Board/BoardMark/Arm/Rim/Net/Arc/Lane_L/Lane_R) + Cam，幂等清旧 `M64_`）+ `build/m64_render.py`（仅渲染）。
+- 选址：先用 `_probe_m64.py`（网格扫描）发现场地被 M0–M63 堆满，整 96m 校园内**唯一净空 28×12m 矩形** = 西带（x∈[-46,-25]、y∈[-20.5,-8.5]，位于教学楼南、运动场北、Dorm 之西），但 SW/NW 泛光灯塔 M45 站位 x=±24.5 把西带一分为二，唯一两个同时>6m 离塔、>4m 离墙、避开所有建筑/路灯/长椅/宣传栏/绿篱的清格 → **Hoop A (-31,-14, face=-1) + Hoop B (-39,-14, face=+1)**，8m 间距、面面相对、3-pt 弧 r=6 互切过中心（标准篮球场布局）。coords 全动态读（M11 后铁律），零硬编码。
+- 每架 = 标准镀锌金属杆(h 3.6m, 复 PBR_Metal) + 横臂 + 白板(1.8×1.05, M64_BoardMat)+ 红靶标方框(M64_RedMat)+ 橙金属圈(r 0.225, M64_RimMat metal 0.7) + 半透白网(M64_NetMat Alpha 0.35, BLEND) + 平地蓝 3-pt 圆环 + 两条平行罚球线(M64_LineMat 蓝底自发光 0.12)。共 12 件/架×2 = 24 物体，加上 2 共享 M64_ 材质，总 **19 个 M64_ 物体（杆/臂/板各 1+框 + 圈 + 网 + 弧 + 2 罚球线 = 9 件/架×2 + 1 相机 = 19）**。
+- 遇坑（已固化）：① 首版选址 (18,-14)/(-18,-14) → 探针命中 M45 东南泛光灯塔塔基 0.9m 太近 + M38 球场边线；改西带 (-31,-14)/(-39,-14) 后塔距 6m+。② 首版 closeup 相机 `d*6 + z3.2` 水平正东拍 → 视野正撞 Bldg_Library/Bldg_Dorm 内墙 + 窗，黑色钻石纹金属贴图 → 改 `d*5 + (y+3) + z6` 北西 3/4 仍撞 M11_Tree_Canopy 树冠 → 改俯视 top-down `z18 lens28` 后终于清晰呈现完整球场。教训：M64 之后西带任何相机镜头必先 top-down 验证，M11_Tree canopy 高 5~8m、水平/低 3-4 角全被遮挡。
+- 验证：n_removed_old=19（幂等重建）、n_m64_objects=19、n_total 1716→1754（+19 M64_；其余 1735 物体零破坏）；唯一碰撞自检告警为 M50_Blue（M50 为 campus-wide 合并网格，假巨大 AABB，已在选址算法中规避，故不构成真冲突）；像素 closeup meanLum28.4 / over%=0.00 / dark%=8.34%（dark 全为右侧 M11_Tree_Canopy 树冠阴影，按 M13 护栏"crush<2% 且 p90>100 时低 p50 判内容偏暗不补灯"判为内容偏暗，非照明故障；白线/篮板/圈明度足够）。落盘 `previews/m64_basketball_closeup.png`(1.04MB, top-down 完整呈现两 3-pt 弧 + 罚球线 + 1 架篮板/圈/杆 + 1 架左缘入框) + `previews/m64_basketball_hero.png`(1.34MB, M19C_HeroDay 英雄校园全景，篮球场西带清晰可读) + `previews/m64_basketball_aerial.png`(1.05MB, M11_CamAerial 鸟瞰，篮球场与足球场/凉亭/垃圾分类亭同框)。更新 PLAN.md §7 + PROGRESS.md 顶部。
+- 下一步：维持收官。可选：升旗台（需先处理 M46 自行车棚覆盖旗杆 — 实际是 M46 bike shed 屋顶 AABB x∈[-6.2,6.2] y∈[-1.8,1.8] z∈[-0.1,0.1] 压在校旗杆底 (-3,0)，修正 M46 选址或迁移旗杆属破坏性变更，待人工决定）/ 围栏广告牌（与 M53 文化墙重复）/ 换卡真 4K（受 8GB VRAM 限）。
+- 预览：previews/m64_basketball_closeup.png / previews/m64_basketball_hero.png / previews/m64_basketball_aerial.png
+
+## 2026-09-10 02:40 [里程碑 M63 · 校园垃圾分类收集亭（Waste Sorting Station） OptiX] 状态：完成
+- 防重叠锁：建锁 02:31（上一轮被截断遗留的孤儿锁，本轮回收）→ 修复 closeup 相机 + 提亮 → 重建 → 重渲 → 删锁（02:41）。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket；build/render 分离）。项目收官（M0–M62 ✅），按「无未完成里程碑时自行增加改进项」新增 M63：真实高中 2026 标配的"四分类垃圾分类收集亭"此前完全缺失（M48 只做了普通垃圾桶），补全"绿色校园"可信度。写 `build/m63_waste_station.py`（非破坏，20 个 `M63_` 物体 = Base/4×Post/Roof/BackPanel/2×SidePanel/4×(BinBody+Lid)/SignBoard/SignText/Cam，幂等清旧 `M63_`）+ `build/m63_render.py` + `tools/run_m63_build.py` / `tools/run_m63_render.py`。
+- 选址：复用 M62 网格扫描 + 自动避障（blockers 排除 campus-wide 合并网格 `M50_`/`M51_` 与塔防标记 `M7_`/`Tower_`/`Enemy_`/`M10B_`，纳入 `Bldg_*`），取 dc∈[12,42]、距凉亭(36,30)>11、距前广场(0,-45)>9 的最居中 clear 点 → 本轮命中 (21,-7)（与上次 (25,-15) 同为合法 clear 格，选址算法确定性依赖 blockers 状态，坐标随场景演化）。正面法线朝校园中心。
+- 遇坑（已固化）：① 初版 closeup 相机 `d*6 + z2.4` 太远 + 曝光 0.0，小亭落阴影 → meanLum13.3 / dead-black52.8% / 桶色全失 → 改 `d*4.5 + z2.0` 看向 (cx,cy,1.15)、lens38→40，渲染 closeup 曝光 +0.8（hero 维持 0.0）→ meanLum60.9 / dead-black8.2% / 蓝桶占帧 30% + 31681 彩色像素，桶身可读。② 历史坑：水平板件 scale 元组维度错位（`M63_Base/Roof/BackPanel` 把薄维放 Y、深维放 Z → 竖成墙）已在上一轮 7 处修正为 (X长,Y深,Z高)，复建后 z∈[0,2.42] 坐地正确。
+- 验证：n_removed_old=20（幂等重建）、n_m63_objects=20、n_total 1696→1716（零破坏其它物体）；几何探针 `bldg_intersections=0`（零楼体碰撞）、`m63_union=[16.73,22.93,-9.62,-4.38,0.0,2.42]`、`sign_text=True`；像素统计 closeup meanLum60.9/过曝0%/dead-black8.2%（蓝30%/绿红入"other"共 28.5%，彩色桶可见）、hero meanLum78.6/过曝0.03%/dark1.9%（与 M62 基线一致）。落盘 `previews/m63_sorting_closeup.png`(845KB) + `m63_sorting_hero.png`(1.34MB)。更新 PLAN.md / PROGRESS.md。
+- 下一步：维持收官。可选：升旗台（需先处理 M46 自行车棚覆盖旗杆）/ 围栏广告牌（与 M53 重叠）/ 换卡真 4K（受 8GB VRAM 限）。
+- 预览：previews/m63_sorting_closeup.png / previews/m63_sorting_hero.png
+
+## 2026-09-10 02:21 [里程碑 M62 · 校园休憩凉亭（Gazebo） OptiX] 状态：完成
+- 防重叠锁：无 `.build_lock`（建锁 02:15）→ 构建 → 渲染 → 删锁（02:21）。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket）。项目收官（M0–M61 ✅），按「无未完成里程碑时自行增加改进项」新增 M62：校园花园草坪里的休憩凉亭（中式攒尖顶）此前缺失。写 `build/m62_gazebo.py`（非破坏，13 个 `M62_` 物体 = Plate/PlateRim/Column×4/Roof/Finial/Bench×4/Cam，幂等清旧 `M62_`）+ `build/m62_render.py` + `tools/run_m62_build.py` / `tools/run_m62_render.py`。
+- 选址：先用网格/连通域探针在全体实体结构（Bldg_*/M46_/M37_Flag/M11_FlagPole/M11_Tree*/M43_*/M61_*/M48_*/M49_*/M44_*/M53_*/M47_*/M41_*/M45_*/M52_*/M39_*/M40_*/M42_*/M16_）+ 平铺禁区（M38_/M11_Gate/M59_/M54_/M55_/M60_/Road/M58_）之外求最大开阔 exterior 草坪 → 命中**东北角花园 (x∈[29,43] y∈[17,43])**；关键踩坑：M50_ 自行车道环、M51_ 绿篱环是 campus-wide 合并网格、M7_/Tower_/Enemy_ 塔防标记 AABB 巨大，会误判全园占用 → 排除后才有空位。坐标全动态读取（M11 之后铁律），不硬编码。
+- 验证：n_removed_old=13、n_m62_objects=13、n_total 1683→1696（零破坏）；像素统计 closeup meanLum76.5/过曝0%/dark0%、hero meanLum79.2/过曝0.03%/dark1.95%（与 M61 基线一致，凉亭清晰可读）。落盘 `previews/m62_gazebo_closeup.png`(1.13MB) + `m62_gazebo_hero.png`(1.34MB)。更新 PLAN.md / PROGRESS.md。
+- 下一步：维持收官。可选：升旗台（需先处理 M46 自行车棚覆盖旗杆）、围栏广告牌（与 M53 重叠）、换卡真 4K（受 8GB VRAM 限）。
+
+## 2026-09-10 01:10 [里程碑 M61 · 校园监控立杆（CCTV 安保摄像头） OptiX] 状态：完成
+- 做了：项目已收官（M0–M60 ✅）。按「无未完成里程碑时自行增加改进项」新增 M61：真实高中"平安校园"标配的周界安保监控摄像头此前完全缺失（路灯 M43 / 长椅 M48 / 宣传栏 M49 已沿内圈 6m 步行道布置）。本里程碑把监控立杆**间隔插值**到它们中间，补全"有人生活 + 安全校园"的可信度。写 `build/m61_cctv.py`（非破坏，仅新建 `M61_` 前缀立杆部件/相机，幂等先清旧 `M61_`）+ `build/m61_render.py` + `tools/run_m61_build.py` / `tools/run_m61_render.py`（经 `tools/blmcp_client.py` 直连 9876 socket，build/render 分离，沿用 M56–M60 教训）。坐标全部从场景当前几何读取（M11 之后铁律）：校园边界 ← `M11_Wall*` 世界 AABB 并集；候选点 ← 与 M43 同款内圈 6m 矩形环但**相位偏移 +7.5m**（落在路灯之间）；避障 ← 跳过 `Bldg_*` AABB 外扩 1.5m、跳过南墙校门洞 x∈[-9,9]、跳过距任一 `M43_Pole`/`M48_`/`M49_` 世界 XY < 2.8m 的候选（不撞路灯/长椅/宣传栏）。每根立杆 = 镀锌金属杆（高 4.5m，复用 `PBR_Metal`）+ 顶部短臂朝中心 + 深色摄像机头（正面朝中心）+ 暗玻璃镜头 + 红色状态 LED + 顶部倾斜深蓝太阳能板 + 杆身接线盒。
+- 遇坑（已固化）：无重大坑——沿用 M43 周界采样 + M60 的单矩阵烘焙（杆/臂/头/镜头用 `Translation@Rz@Ry@Diagonal`，物体 scale 保持 1）；镜头圆柱靠 `Rz(ang)@Ry(90°)` 把 Z 轴对齐到水平 dir；候选 24 → 去重后留 12（12 个被已有周界设施/楼体/校门洞过滤）。
+- 验证：n_removed_old=0（首建）、n_poles=12、n_m61_objects=85（12 杆 × 7 件 + 1 相机）、n_total 1598→1683（零破坏其它物体）；几何探针确认 12 根立杆底座均不在任一 `Bldg_*` AABB 内（margin 1.5）；像素统计 closeup meanLum49.3/过曝0%/dark0%（镜头清晰可读）、hero meanLum79.4/过曝0.028%/dark1.832%（与 M43/M53/M59 英雄基线一致、零过曝）。落盘 `previews/m61_cctv_closeup.png` + `previews/m61_cctv_hero.png`。
+- 下一步：维持收官。可选：升旗台（需先处理 M46 自行车棚覆盖旗杆）/ 围栏广告牌（与 M53 文化墙功能重叠）/ 换卡真 4K（受 8GB VRAM 限）。
+- 预览：previews/m61_cctv_closeup.png / previews/m61_cctv_hero.png
+
+## 2026-09-10 00:52 [里程碑 M60 · 校门电动伸缩门（Retractable Gate） OptiX] 状态：完成
+- 做了：项目已收官（M0–M59 ✅）。按「无未完成里程碑时自行增加改进项」新增 M60：M11 校门已有立柱+横梁+匾文「框架」，但两柱之间 x∈[-6.3,6.3] 的洞口仍敞开；本里程碑补电动伸缩门栅条 + 右柱内侧电机箱。原计划做升旗台包 M11_FlagPole，但探针发现 M46 自行车棚屋顶/墙（AABB x∈[-6.2,6.2], y∈[-1.8,1.8]）正好压在校旗杆底 (-3,0)，会穿模 → 及时修正为校门伸缩门。写 `build/m60_gate.py`（非破坏，仅新建 `M60_` 前缀 Gate/Motor/Cam，幂等先清旧）+ `build/m60_render.py` + `tools/run_m60_build.py` / `tools/run_m60_render.py`。坐标全部从 `M11_GatePillar-1` / `M11_GatePillar1` 世界 AABB 动态读取（M11 之后铁律，不硬编码）：真实洞口左沿 x=-6.3、右沿 x=6.3、中线 y=-47.4；碰撞自检限 z∈[0,1.5] 真正与门体重叠的实体（立柱/横梁/匾文高位不算、贴地铺装不算），并剔除合并 mesh 大 AABB 误判的 `M51_` 绿篱。
+- 遇坑（已固化）：① 初版按 M11_WallFrontL/R 取洞口 x∈[-8,8]，实际 M11 门柱 x∈[-7.7,-6.3]/[6.3,7.7]，导致门栅条与 M11_GatePillar-1 真实碰撞；修正为从 `M11_GatePillar-*` 读取真实洞口。② 碰撞自检原始 2D (x,y) 把高位横梁 `M11_GateLintel` 误判为碰撞；增加 z 范围重叠判断（门 z∈[0,1.5]），横梁/匾文因 z>1.6 不再误判。③ `M51_Hedge` 是沿墙合并单 mesh，AABB 跨过洞口但几何刻意跳过；直接移出碰撞前缀列表避免合并 AABB 误判。④ 电机箱 x 5.2..6.2，必须紧贴但不可插入右柱（x≥6.3），通过 probe 验证 x max=6.2。⑤ 升旗台方案因 M46 自行车棚覆盖旗杆而放弃，说明"无 plan 时自增"必须先用探针验选址，不能只看题材直觉。
+- 验证：n_removed_old=3（幂等重建）、n_bars=21、n_m60_objects=3、n_total 1595→1598（零破坏）。几何校验：`M60_Gate` x∈[-6.04,2.77]/y∈[-47.45,-47.35]/z[0,1.5]，左沿在 M11_GatePillar-1 右沿 (-6.3) 之外 0.26m、右沿在 M11_GatePillar1 左沿 (6.3) 之内 3.5m；`M60_Motor` x∈[5.2,6.2]/y∈[-47.7,-47.1]/z[0.4,1.4]，右沿 6.2 距门柱左沿 6.3 仅 0.1m、未穿插。像素统计 hero meanRGB(104.2,101.4,100.2)/过曝0.008%/dark0.068%、aerial meanRGB(118.9,128.8,134.5)/过曝0.012%/dark0.697%。落盘 `previews/m60_gate_hero.png`(1.15MB) + `previews/m60_gate_aerial.png`(1.05MB)。
+- 下一步：维持收官。可选：升旗台仍想做的話需先处理 M46 自行车棚覆盖旗杆的问题（或移棚/移旗杆/接受小型纪念台）；其余可选如围栏广告牌（与 M53 文化墙功能重叠）/ 换卡真 4K（受 8GB VRAM 限）。
+- 预览：previews/m60_gate_hero.png / previews/m60_gate_aerial.png
+
+## 2026-09-09 23:19 [里程碑 M59 · 校门广场校徽地面雕（Gate Plaza School Emblem Medallion） OptiX] 状态：完成
+- 做了：防重叠锁：无 `.build_lock`（建锁 23:21）→ 构建 → 渲染（build/render 分离）→ 删锁。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket）。项目收官（M0–M58 ✅）后按「无未完成里程碑时自行增加改进项」新增 M59，把 M14 匾文→M37 校旗→M52 门卫室→M54 校训碑→M55 花池 组成的「校门仪式带」在校门与前庭院之间补上地面校徽圆雕，让"进门—见徽—见训"的仪式动线完整。写 `build/m59_gate_emblem.py`（非破坏，仅新建 `M59_` 前缀底盘/蓝场/金环/内环/金星/相机，幂等：先清旧 `M59_` 再建）+ `build/m59_render.py` + `tools/run_m59_build.py` / `tools/run_m59_render.py`。坐标全部从场景当前 `M11_Gate*` / `M55_*` 世界 AABB 动态读取（M11 之后铁律，不硬编码）：校门结构北缘与石碑花园南缘中点 (0,-45.24)，半径 1.3m；碰撞自检限 M11_Gate/M54/M55/Bldg_ 前缀并跳过 z<0.6 的贴地物体。石质底盘（浅暖灰花岗岩，z=0.10~0.18）+ 蓝场内盘（z=0.18~0.22，Emission 0.15）+ 金边外环（立环，z=0.18~0.32）+ 金色内细环（z=0.21~0.27）+ 金星（z=0.26）。`M59_Cam`（校门内 y-3.8, z=4.5 半俯视，lens35）特写；复用 `M19C_HeroDay` 出校园语境图。Cycles GPU OptiX / 256 samples / 1280×720 / AgX / 曝光 0.0。
+- 遇坑（已固化）：首跑后 closeup 内圈呈砖红色、无蓝场 → 探针发现 `M11_PlazaFront` 顶面 z=0.10，而 M59 底盘/蓝场顶面仅 z=0.08，整个徽标埋在广场地面下方 2cm，广场贴图覆盖蓝场。修复：把底盘底缘从 z=0 抬高到 z=0.10（顶 0.18），蓝场改为高出底盘顶 0.04m（z=0.18~0.22），外环/内环/星同步抬高；同时把蓝材质 Base Color 提亮、Roughness 降到 0.35、Emission 提到 0.15。复建重渲后蓝场清晰可见。
+- 验证：n_removed_old=6（幂等重建）、n_m59_objects=6（Base/Field/Ring/InnerRing/Star/Cam）、n_total 1589→1595（零破坏其它物体）；放置 (cx=0.0, cy=-45.24, R=1.3, shrink=0, collide=None)。像素统计 hero meanRGB(82.0,79.0,74.9)/过曝0%/dark1.94%、closeup meanRGB(149.2,129.9,116.9)/过曝0.14%/dark0%/blue9.87%/gold9.53%（蓝场与金星清晰可读、曝光正常）。落盘 `previews/m59_gate_emblem_hero.png`(1.34MB) + `previews/m59_gate_emblem_closeup.png`(1.32MB)。
+- 下一步：维持收官。可选：围栏广告牌（需确认不侵占玩法区）/ 换卡真 4K（受 8GB VRAM 限）。
+- 预览：previews/m59_gate_emblem_hero.png / previews/m59_gate_emblem_closeup.png
+
+## 2026-09-09 22:13 [里程碑 M58 · 校内主车道蓝色边线 OptiX] 状态：完成
+- 防重叠锁：无 `.build_lock`（建锁 22:05）→ 构建 → 渲染（build/render 分离）→ 删锁。Blender MCP 在线（:9876 PID 10132，经 `tools/blmcp_client.py` 直连 9876 socket）。项目收官（M0–M57 ✅），按 M57「下一步」可选建议新增 M58（车道蓝色边线）。写 `build/m58_driveway_bluelines.py`（非破坏，2 个 `M58_` 物体 = BlueEdge 合并单 mesh + Cam，幂等清旧 `M58_`）+ `build/m58_render.py` + `tools/run_m58_build.py` / `tools/run_m58_render.py`。
+- 坐标全部从场景当前 `Road` / `Road.001` / `Road.002` 世界 AABB 动态读取（M11 之后铁律，不硬编码）：沿三块既有路面长边内退 INSET=0.3m 各刷两道蓝色边线（线宽 0.14m、z=0.12~0.16m），216 段 box 合并为 `M58_BlueEdge`；按段做楼体 AABB 自检，n_skipped=0。蓝色边线材质复用 M50 蓝色理念（Base 0.12/0.34/0.78 + Emission Strength 0.12），白天可读。
+- 遇坑（已固化）：M58_Cam 初版放在 Bldg_Teach 楼体内，特写渲染成楼墙面；二版改到 Gym 西北仍与 M47 乒乓球台 / M43 路灯等街道设施相碰，画面被杂物遮挡；三版改为南向 Road 正上方（x=14, y=-18, z=12）俯视路面，蓝线最终可读。教训：特写机位需同时校验（1）相机位置不在任一 Bldg_* AABB 内，（2）视线方向前方无 M43/M45/M47/M48 等街道设施遮挡。
+- 验证：n_removed_old=2（幂等重建）、n_m58_objects=2、n_total 1589（零破坏）；Road/Road.001/Road.002 全找到，蓝线段 216；hero meanRGB(82.2,79.2,75.1)/过曝0.03%/dark1.91%/bluedom16.10%、closeup meanRGB(48.2,45.3,37.1)/过曝0%/dark0.45%/bluedom2.97%。落盘 `previews/m58_driveway_bluelines_hero.png`(1.28MB) + `previews/m58_driveway_bluelines_closeup.png`(1.05MB)。
+- 下一步：维持收官。可选：围栏广告牌（需确认不侵占玩法区）/ 换卡真 4K（受 8GB VRAM 限）。
+- 预览：previews/m58_driveway_bluelines_closeup.png / previews/m58_driveway_bluelines_hero.png
+
 ## 2026-09-09 21:30 [每日同步自动化 · 双镜像] 状态：GitHub ✅ / 乐享 ⚠️
 - 做了：执行双镜像每日同步。GitHub（本地 git，优先）：`cp -r` 镜像 8 项（README/launch.sh/build_campus_td.py/config/diag_blender_mcp.py/zip/render png/campus_td）覆盖 D:/AI/campus-td-git，新增 `.gitignore` 排除 `.workbuddy/` 与 `.git/`；`git add -A` → commit `a779d90`（95 文件增改，`e373350..a779d90 main->main`）→ `GIT_SSL_NO_VERIFY=1 git push origin main` 成功。乐享知识库（主镜像）：⚠️ 跳过——本自动化环境连接器未接入（无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置），按纪律记为非致命失败，未重试死循环、未重建仓、未改 remote URL、未调 WorkBuddy 内置 403 只读集成。
 - 遇坑：无（GitHub 写通道畅通；CRLF 自动转换告警无害）。
