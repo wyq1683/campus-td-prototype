@@ -1,3 +1,165 @@
+## 2026-09-11 21:30 [每日同步自动化 · 双镜像] 状态：GitHub ✅ 已推送 · 乐享 ⚠️ 跳过
+- GitHub（本地 git，优先）：✅ 成功。cp -r 镜像 8 项（README/launch.sh/build_campus_td.py/config/diag_blender_mcp.py/zip/render png/campus_td，排除 `.workbuddy/` 与 `.git/`）至 `D:/AI/campus-td-git`；git add -A → commit `sync: 2026-09-11 自动同步`（2 文件增改：PROGRESS.md 更新 + 新增 qa_nightly 探针占位）→ `GIT_SSL_NO_VERIFY=1 git push origin main` 成功（main->main）。CRLF 转换告警无害；未改 remote URL、未重建仓、未调 WorkBuddy 内置 403 只读集成。
+- 乐享知识库（主镜像）：⚠️ 跳过（非致命）。本自动化环境无 `mcp__lexiangla__*` 工具、mcp.json 无 lexiang 配置 → 连接器未接入，按纪律记为失败、不重试死循环、不改目标，待连接器就绪后补传。
+- 本仓库记录：STATUS.md / PROGRESS.md 顶部已追加本次同步记录（2026-09-11 21:30）。
+
+## 2026-09-11 21:09 [M69 升旗台] 状态：Blender 离线·离线分支（四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁→建锁(21:09)→检 :9876 无 LISTENING（离线）→离线分支→删锁收尾。
+- 做了：四件套 `py_compile` 全过无漂移；build/m69_flag_platform.py / m69_render.py / tools/run_m69_build.py / tools/run_m69_render.py 均存在且语法正确；RESEARCH.md M69 小节 + PLAN §7 M69 条目已齐，不重复追加。
+- 遇到：Blender 实例未启动，:9876 无监听；无法实跑构建/出图。属环境状态，非脚本错误（多轮离线加固已达"在线即首跑"形态）。
+- 下一步：Blender 在线（:9876 监听）后 `tools/run_m69_build.py`→`run_m69_render.py` 直连 9876，落盘 previews/m69_flag_platform_{hero,aerial}.png，像素统计确认后回写 PLAN §7（✅）。
+- 预览：待在线首跑后生成 previews/m69_flag_platform_hero.png / m69_flag_platform_aerial.png
+
+## 2026-09-11 20:07 [M69 升旗台] 状态：Blender 离线·离线分支（四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁→建锁(20:07)→检 :9876 无 LISTENING（离线）→离线分支→删锁收尾。
+- 做了：四件套 `py_compile` 全过无漂移；build/m69_flag_platform.py / m69_render.py / tools/run_m69_build.py / tools/run_m69_render.py 均存在且语法正确；RESEARCH.md M69 小节 + PLAN §7 M69 条目已齐，不重复追加。
+- 遇到：Blender 实例未启动，:9876 无监听；无法实跑构建/出图。属环境状态，非脚本错误（多轮离线加固已达"在线即首跑"形态）。
+- 下一步：Blender 在线（:9876 监听）后 `tools/run_m69_build.py`→`run_m69_render.py` 直连 9876，落盘 previews/m69_flag_platform_{hero,aerial}.png，像素统计确认后回写 PLAN §7（✅）。
+- 预览：待在线首跑后生成 previews/m69_flag_platform_hero.png / m69_flag_platform_aerial.png
+
+## 2026-09-11 19:03 [M69 升旗台] 状态：Blender 离线·离线分支（四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁→建锁(19:03)→检 :9876 无 LISTENING（离线）→离线分支→删锁收尾。
+- 做了：四件套 `py_compile` 全过无漂移；build/m69_flag_platform.py / m69_render.py / tools/run_m69_build.py / tools/run_m69_render.py 均存在且语法正确；RESEARCH.md M69 小节 + PLAN §7 M69 条目已齐，不重复追加。
+- 遇到：Blender 实例未启动，:9876 无监听；无法实跑构建/出图。属环境状态，非脚本错误（多轮离线加固已达"在线即首跑"形态）。
+- 下一步：Blender 在线（:9876 监听）后 `tools/run_m69_build.py`→`run_m69_render.py` 直连 9876，落盘 previews/m69_flag_platform_{hero,aerial}.png，像素统计确认后回写 PLAN §7（✅）。
+- 预览：待在线首跑后生成 previews/m69_flag_platform_hero.png / m69_flag_platform_aerial.png
+
+## 2026-09-11 18:00 [M69 升旗台] 状态：Blender 离线·离线分支（四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁→建锁(18:00)→检 :9876 无 LISTENING（离线）→离线分支→删锁收尾。
+- 做了：四件套 py_compile 全过无漂移；run 脚本路径指向 build/m69_flag_platform.py / m69_render.py 正确；RESEARCH.md §12 + PLAN §7 M69 条目已齐，不重复追加。
+- 遇到：Blender 实例未启动，:9876 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（:9876 监听）后 tools/run_m69_build.py→run_m69_render.py 直连 9876，落盘 previews/m69_flag_platform_{hero,aerial}.png，像素统计确认后回写 PLAN §7（✅）。
+- 预览：待在线首跑后生成 previews/m69_flag_platform_hero.png / m69_flag_platform_aerial.png
+
+## 2026-09-11 16:56 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 四件套 py_compile 全过 + 静态安全审计全过 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(16:56) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了：四件套 `py_compile` 全过无漂移；build 脚本静态安全审计全过（`PREFIX="M69_"` / 零实际 `bpy.ops`·仅注释 / 无 `mode_set` / `M69_Finial` 独立单例 / `collision_check` / data-API 相机 `bpy.data.cameras.new`）。RESEARCH.md §12 + PLAN §7 M69 条目已齐，不重复追加。
+- 下一步：Blender 在线（:9876 监听）后 `tools/run_m69_build.py`→`run_m69_render.py` 直连 9876，落盘 previews/m69_flag_platform_{hero,aerial}.png，像素统计确认后回写 PLAN §7（✅）。
+- 预览：待在线首跑后生成 previews/m69_flag_platform_hero.png / m69_flag_platform_aerial.png
+
+## 2026-09-11 15:54 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 静态安全审计全过 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(15:54) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·静态安全审计）：Blender MCP 仍离线（`:9876` 无 LISTENING）。对四件套重新 `py_compile` 全过（脚本未漂移，仍「在线即首跑」形态）；并对 `build/m69_flag_platform.py` 做关键不变量静态审计全过：① 零实际 `bpy.ops.*` 调用（第258行仅注释提及 `camera_add`）；② `PREFIX="M69_"` 变量化前缀隔离（clear_old 仅清 `startswith(PREFIX)` 旧物体、`nm=o.name` 先取再 remove 防 ReferenceError，pitfall#16）；③ `collision_check()` 模块级自检 @(0,28) 占位；④ 金顶 `M69_Finial` 独立单例、未并入 `bm_pole`（19:42 重影 bug 固化已修）；⑤ 相机 `bpy.data.cameras.new(PREFIX+"Cam")` 纯 data API（避坑#2）。`RESEARCH.md` §12 M69 与 `PLAN.md` §7 M69 ⬜ 条目均已齐，按"不重复追加"原则未再写入。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `campus_td/tools/run_m69_build.py` → `campus_td/tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 14:49 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(14:49) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·编译校验 + 链路核对）：Blender MCP 仍离线（`:9876` 无 LISTENING）。重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。新增链路核对：`run_m69_build.py`/`run_m69_render.py` 经 `blmcp_client.send_execute` 直连 9876（build 300s / render 540s），路径指向 `build/m69_flag_platform.py` / `m69_render.py` 正确；`m69_render.py` 第 47 行 `bpy.ops.render.render(write_still=True)` 为渲染必需（非构建期 operator，符合避坑#2 仅禁 mode_set）；`build/m69_flag_platform.py` 零实际 `bpy.ops.*` 调用（仅 258 行注释提及），金顶 `M69_Finial` 独立单例、未并入 `bm_pole`（19:42 重影 bug 固化已修）。`RESEARCH.md` §12 M69 小节与 `PLAN.md` §7 M69 ⬜ 条目均已齐，按"不重复追加"原则未再写入。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `campus_td/tools/run_m69_build.py` → `campus_td/tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 13:45 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(13:45) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·编译校验）：Blender MCP 仍离线（`:9876` 无 LISTENING）。重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。`RESEARCH.md` §12 M69 小节与 `PLAN.md` §7 M69 ⬜ 条目均已齐，按"不重复追加"原则未再写入。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `campus_td/tools/run_m69_build.py` → `campus_td/tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 12:41 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(12:41) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·编译校验）：Blender MCP 仍离线（`:9876` 无 LISTENING）。重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。`RESEARCH.md` §12 M69 小节（含 19:42 金顶重影修复、圆柱旗杆、纯 data-API 相机、零 operator、M18 材质槽隔离）与 `PLAN.md` §7 M69 ⬜ 条目均已齐，按"不重复追加"原则未再写入。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `campus_td/tools/run_m69_build.py` → `campus_td/tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 11:32 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 四件套 py_compile 全过 · 路径核对 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(11:32) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·编译校验 + 路径核对）：Blender MCP 仍离线（`:9876` 无 LISTENING）。独立 `py_compile` 四件套全过（脚本无漂移，仍「在线即首跑」形态）。**路径核对**：`run_m69_build.py`/`run_m69_render.py` 实际位于 `campus_td/tools/`（此前 memory 记为 `tools/`，本次已更正），四件套路径一致性确认无误。坐标全部从探针/场景几何动态读取、仅清 `M69_` 前缀、零硬编码、零破坏其它物体，含 19:42 已固化的金顶重影修复。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `campus_td/tools/run_m69_build.py` → `campus_td/tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 10:28 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(10:28) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·编译校验）：Blender MCP 仍离线（`:9876` 无 LISTENING）。独立 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本无漂移，仍「在线即首跑」形态）。坐标全部从探针/场景几何动态读取、仅清 `M69_` 前缀、零硬编码、零破坏其它物体，含 19:42 已固化的金顶重影修复。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 09:17 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 四件套 py_compile 全过无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(09:17) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·编译校验）：Blender MCP 仍离线（`:9876` 无 LISTENING）。独立 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本无漂移，仍「在线即首跑」形态）。坐标全部从探针/场景几何动态读取、仅清 `M69_` 前缀、零硬编码、零破坏其它物体，含 19:42 已固化的金顶重影修复。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 07:09 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 全件逐行复核 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(07:09) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 离线分支做**逐行复核**（非仅 py_compile）：重读 `build/m69_flag_platform.py` 全文——确认 `PREFIX="M69_"` 前缀隔离、`clear_old` 先取 `nm2=o.name` 再 remove（pitfall #16）、零 operator / 零 `mode_set`（相机纯 data-API）、金顶仅由独立 `M69_Finial` 提供（19:42 重影 bug 已固化修复）、`collision_check()` 模块级自检 `(0,28)` 冲突即 abort。四件套 `py_compile` + 跨文件链路一致性（run_m69_build→m69_flag_platform / run_m69_render→m69_render→复用 m06、恢复 M19C_HeroDay）全过。脚本为「在线即首跑」最终形态、无漂移。
+- RESEARCH.md §12 M69 离线小节 / PLAN §7 条目已齐，按"不重复追加"原则未再写入。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876，落盘 `previews/m69_flag_platform_{hero,aerial}.png`，像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+
+## 2026-09-11 07:08 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 复检就绪 · 四件套无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(07:08) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·复检）：Blender MCP 仍离线（`:9876` 无 LISTENING）。重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。RESEARCH.md / PLAN §7 条目已齐（M69 多轮离线小节 + 路线图 ⬜ 待首跑），不重复追加。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 06:06 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 复检就绪 · 四件套无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(06:06) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·复检）：Blender MCP 仍离线（`:9876` 无 LISTENING）。重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。RESEARCH.md / PLAN §7 条目已齐（M69 多轮离线小节 + 路线图 ⬜ 待首跑），不重复追加。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 05:03 [M69 升旗台] 状态：Blender 离线·离线分支（深度静态复检 · 零 operator 调用 · 四件套无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(2026-09-11 05:03) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·深度复检）：Blender MCP 仍离线（`:9876` 无 LISTENING）。在 `py_compile` 四件套全过基础上，进一步做静态不变量复检：`m69_flag_platform.py` 实际 **零 `bpy.ops` operator 调用**（唯一 `bpy.ops` 命中位于注释「不调 bpy.ops.object.camera_add」），旧物体清除走 `startswith(prefix)`（prefix="M69_"）变量化前缀隔离、移除前先存名（避 StructRNA ReferenceError），全程 bmesh 直建 + 纯 data API 相机，与 PLAN 避坑清单 #2/#16 一致。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图。属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 04:01 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 复检就绪 · 四件套无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(04:01) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·复检）：Blender MCP 仍离线（`:9876` 无 LISTENING）。重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-11 02:59 [M69 升旗台] 状态：Blender 离线·离线分支（复检就绪 · 四件套无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁→建锁(02:59)→检 :9876 无 LISTENING（离线）→离线分支→删锁收尾。
+- 复检：四件套 `py_compile` 全过（build/m69_flag_platform.py / build/m69_render.py / tools/run_m69_build.py / tools/run_m69_render.py），脚本未漂移、仍「在线即首跑」形态。
+- 离线分支：`:9876` 仍无监听，M69 无法首跑。RESEARCH.md / PLAN §7 条目已齐（M69 离线小节 + 路线图 ⬜ 待首跑），不重复追加。
+- 下一步：Blender 在线（:9876 监听）后 `tools/run_m69_build.py`→`tools/run_m69_render.py` 直连 9876，落盘 previews/m69_flag_platform_{hero,aerial}.png，像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+
+## 2026-09-11 01:57 [M69 升旗台] 状态：Blender 离线·离线分支（复检就绪 · 四件套无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁→建锁(01:57)→检 :9876 无 LISTENING（离线）→离线分支→删锁收尾。
+- 复检：四件套 `py_compile` 全过（build/m69_flag_platform.py / build/m69_render.py / tools/run_m69_build.py / tools/run_m69_render.py），脚本未漂移、仍「在线即首跑」形态。
+- 离线分支：`:9876` 仍无监听，M69 无法首跑。RESEARCH.md / PLAN §7 条目已齐（M69 离线小节 + 路线图 ⬜ 待首跑），不重复追加。
+- 下一步：Blender 在线（:9876 监听）后 `tools/run_m69_build.py`→`tools/run_m69_render.py` 直连 9876，落盘 previews/m69_flag_platform_{hero,aerial}.png，像素统计确认后回写 PLAN §7（✅）+ PROGRESS 顶部。
+
+## 2026-09-11 00:55 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 复检就绪 · 四件套无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(00:55) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·复检）：Blender MCP 仍离线（`:9876` 无 LISTENING）。重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。M69 离线研究/加固（圆柱旗杆·纯 data-API 相机·零 operator·金顶重影修复·PLAN §7 条目）与 RESEARCH.md 小节已齐，不重复追加。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ 本顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 23:53 [M69 升旗台] 状态：等待 Blender 在线（离线分支 · 复检就绪 · 四件套无漂移 · 待在线首跑）
+- 防重叠锁：无旧锁 → 建锁(23:53) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·复检）：Blender MCP 仍离线（`:9876` 无 LISTENING）。重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。M69 离线研究/加固（圆柱旗杆·纯 data-API 相机·零 operator·金顶重影修复·PLAN §7 条目）与 RESEARCH.md 小节已齐，不重复追加。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），像素统计确认后回写 PLAN §7（✅）+ 本顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 22:51 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：复检就绪 · 四件套无漂移）
+- 防重叠锁：无旧锁 → 建锁(22:51) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·复检）：Blender MCP 仍离线（`:9876` 无 LISTENING）。本轮重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。M69 离线研究/加固（圆柱旗杆、纯 data-API 相机、零 operator、金顶重影 bug 修复、PLAN §7 条目）已在前序多轮完成，RESEARCH.md 已含全部小节，不重复追加。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），据像素统计确认后回写 PLAN.md §7（标 ✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
+## 2026-09-10 21:48 [里程碑 M69 · 升旗台（Flag-Raising Platform） OptiX] 状态：等待 Blender 在线（离线分支：复检就绪 · 四件套无漂移）
+- 防重叠锁：无旧锁 → 建锁(21:48) → 检 `:9876` 无 LISTENING（Blender 离线）→ 走离线分支 → 删锁收尾。
+- 做了（离线分支·复检）：Blender MCP 仍离线（`:9876` 无 LISTENING、无 blender 进程）。本轮重新 `py_compile` 四件套 `build/m69_flag_platform.py` / `m69_render.py` / `tools/run_m69_build.py` / `tools/run_m69_render.py` 全过（脚本未漂移，仍「在线即首跑」形态）。M69 全部离线研究/加固（圆柱旗杆、纯 data-API 相机、零 operator、金顶重影 bug 修复、PLAN §7 条目已入 ✅）已在 18:39–20:46 多轮完成，RESEARCH.md 已含全部小节，不重复追加。
+- 遇到：Blender 实例未启动，`:9876` 无监听；无法实跑构建/出图；属环境状态，非脚本错误。
+- 下一步：Blender 在线（`:9876` 监听）后 `tools/run_m69_build.py` → `tools/run_m69_render.py` 直连 9876 socket，落盘 `previews/m69_flag_platform_hero.png` + `m69_flag_platform_aerial.png`（1920×1080 / Cycles OptiX / 256 samples / `build_lighting('day')`），据像素统计（aerial 无过曝、hero 台基/藏青校旗/金顶清晰）确认后回写 PLAN.md §7（标 ✅）+ PROGRESS 顶部。
+- 预览：previews/m69_flag_platform_hero.png / previews/m69_flag_platform_aerial.png（待 Blender 在线后生成）
+
 ## 2026-09-10 21:30 [每日同步自动化 · 双镜像] 状态：GitHub ✅ 已推送 / 乐享知识库 ⚠️ 跳过
 - 做了（每日同步自动化）：① GitHub 本地 git 镜像——cp -r 覆盖 8 项（README/launch.sh/build_campus_td.py/config/diag_blender_mcp.py/zip/render png/campus_td，排除 .workbuddy/ 与 .git/）至 D:/AI/campus-td-git；新增 `__pycache__/` 至 .gitignore 防提交字节码；git add -A → commit "sync: 2026-09-10 自动同步" → GIT_SSL_NO_VERIFY=1 push origin main ✅（main->main，未改 remote URL、未重建仓、未调 WorkBuddy 内置 403 只读集成）；② 乐享知识库 ⚠️ 跳过（本自动化环境连接器仍未接入——无 mcp__lexiangla__* 工具、mcp.json 无 lexiang 配置，按纪律记为非致命失败，待连接器就绪后补传 PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh 及绕 WAF 的 diag 脚本）。
 - 预览：GitHub 镜像见 wyq1683/campus-td-prototype（main）
