@@ -1,3 +1,15 @@
+## 2026-09-13 21:39 [每日同步自动化 · 双镜像] 状态：GitHub ✅ 推送成功 / 乐享 ⚠️ 跳过
+- GitHub（本地 git，优先）：镜像 8 项至 D:/AI/campus-td-git → commit `sync: 2026-09-13 自动同步` → push main->main（GIT_SSL_NO_VERIFY=1）。本轮源端仅 STATUS.md/PROGRESS.md 顶部同步记录更新，其余 8 项镜像内容与上次 push 一致无差量；`.gitignore` 排除 `.workbuddy/` 与 `.git/`，CRLF 自动转换告警无害；未改 remote URL、未重建仓、未调 WorkBuddy 内置 403 只读集成。
+- 乐享知识库（主镜像）：⚠️ 跳过（非致命）——本环境无 lexiang 连接器（mcp.json 无 lexiang 配置、无 `mcp__lexiangla__*` 工具），按纪律不重试死循环、不改目标；待连接器就绪后补传 PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh + 绕 WAF 的 diag 脚本（Markdown 表格/代码围栏改纯文本或拆段；diag 用 file 上传）。
+- 源端 STATUS.md（头部日期 2026-09-13 21:39 + 顶部同步条目）/ PROGRESS.md（本条目）已更新并随本次 commit 推上 GitHub 持久化。
+
+## 2026-09-12 23:05 [M69 升旗台] 离线分支：无旧锁→建锁(23:05)→:9876 无 LISTENING（离线）→离线分支→删锁收尾。四件套 py_compile 全过无漂移 + 安全不变量复核（mode_set/bpy.ops 仅注释命中、零实际 operator；PREFIX="M69_" / collision_check / M69_Finial 单例 / data-API 相机）；RESEARCH §M69 + PLAN §7 条目已齐不重复追加。待 Blender 在线首跑。
+## 2026-09-12 23:02 [M69 升旗台] 离线分支：无旧锁→建锁(23:02)→:9876 无 LISTENING（离线）→离线分支→删锁收尾。四件套 py_compile 全过无漂移；RESEARCH §M69 + PLAN §7 条目已齐不重复追加。待 Blender 在线首跑。
+## 2026-09-12 20:59 [M69 升旗台] 状态：Blender 离线·离线分支（防重叠锁已建已删 · 等待 Blender 在线首跑）
+- 防重叠锁：无旧锁→建锁(20:59)→检 :9876 无 LISTENING（离线）→离线分支→删锁收尾。
+- 离线分支：`:9876` 仍无监听。M69 四件套脚本（m69_flag_platform.py / m69_render.py / run_m69_build.py / run_m69_render.py）已就绪且 py_compile 全过、脚本无漂移、RESEARCH.md §M69 + PLAN §7 条目已齐，不重复追加。PROGRESS.md 顶部追加本等待条目。
+- 下一步：Blender 在线（:9876 监听）后 `tools/run_m69_build.py`→`tools/run_m69_render.py` 直连 9876，落盘 previews/m69_flag_platform_hero.png + m69_flag_platform_aerial.png，像素统计确认后回写 PLAN §7（✅）。
+
 ## 2026-09-12 21:30 [每日同步自动化 · 双镜像] 状态：GitHub ✅ 推送成功 / 乐享 ⚠️ 跳过
 - GitHub（本地 git，优先）：镜像 8 项至 D:/AI/campus-td-git → commit `sync: 2026-09-12 自动同步` → push main->main（GIT_SSL_NO_VERIFY=1）。`.gitignore` 排除 `.workbuddy/` 与 `.git/`，CRLF 自动转换告警无害；未改 remote URL、未重建仓、未调 WorkBuddy 内置 403 只读集成。
 - 乐享知识库（主镜像）：⚠️ 跳过（非致命）——本环境无 lexiang 连接器（mcp.json 无 lexiang 配置、无 `mcp__lexiangla__*` 工具），按纪律不重试死循环、不改目标；待连接器就绪后补传 PLAN/PROGRESS/RESEARCH/STATUS/build_campus_td.py/m01_materials.py/mcporter.json/launch.sh + 绕 WAF 的 diag 脚本（Markdown 表格/代码围栏改纯文本或拆段；diag 用 file 上传）。
